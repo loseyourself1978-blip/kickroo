@@ -1,0 +1,19 @@
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+*.xcscmblueprint
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Local automation output
+reports/
+screenshots/
+*.xcresult
+
+# macOS
+.DS_Store
+

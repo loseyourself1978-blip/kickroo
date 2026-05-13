@@ -1,0 +1,55 @@
+name: KickNations
+options:
+  minimumXcodeGenVersion: 2.42.0
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: 0.2
+    CURRENT_PROJECT_VERSION: 2
+    SWIFT_VERSION: 5.0
+targets:
+  KickNations:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: KickNations
+        excludes:
+          - Assets.xcassets
+    resources:
+      - path: KickNations/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kicknations.soccerclash
+        PRODUCT_NAME: Kick Nations
+        TARGETED_DEVICE_FAMILY: 1
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Kick Nations
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIRequiresFullScreen: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+  KickNationsTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: KickNationsTests
+    dependencies:
+      - target: KickNations
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kicknations.soccerclash.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Kick Nations.app/Kick Nations"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+schemes:
+  KickNations:
+    build:
+      targets:
+        KickNations: all
+        KickNationsTests: [test]
+    test:
+      targets:
+        - KickNationsTests

@@ -1,0 +1,569 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0134A26824889F2D7D557117 /* ArenaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E8CD4C3244BF8CDFB43628 /* ArenaController.swift */; };
+		072584AF7863EE6AC78B3E71 /* PlayerProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43AE3F5CB729685E9AC927C9 /* PlayerProgress.swift */; };
+		081B28F13AC181C9B53ADE56 /* ShareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF4B314B90700A19C1AE5A86 /* ShareService.swift */; };
+		0B474A552C5C713BF63B3DAF /* MatchRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C88492D68FA4941F0AF2096 /* MatchRules.swift */; };
+		0BF7EC7EC8F4BFD9D5D999C5 /* Skill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4276C2C476F31B1AB75D1049 /* Skill.swift */; };
+		0CB62A03ED642A5B8E7CC589 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF79D4EAAF9F6FD284269C8 /* RootView.swift */; };
+		0DA67195FD933EA7514DD5AF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE3AE3AABCC960A4E66049C /* HomeView.swift */; };
+		0E9995249FB007E739E6A9CD /* ResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0699AC3073B355B3D5CB1AE /* ResultsView.swift */; };
+		142F9C57DCA1A5FC783AD327 /* ComboController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54FB87B6D2CD8973E8D81025 /* ComboController.swift */; };
+		143E270DFE9BF2C1D94D175E /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD7D9ED7E809FD3B356D22B4 /* AppRouter.swift */; };
+		17175B8A43A79CB2A7B1BE91 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA035DC353B0B0BCAB714758 /* GameView.swift */; };
+		2050BCAC8C61220084B6F8A4 /* GameCenterService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1C01CB38B8C6C6197C523CA /* GameCenterService.swift */; };
+		26FBCB3CE6CA7DA5978D16C3 /* MatchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 019511977D95EE44C63E1593 /* MatchViewModel.swift */; };
+		2AA9994413989F2063694997 /* PinballArenaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C51D277533E0486B3F47E70 /* PinballArenaController.swift */; };
+		326259446C237C24253CF648 /* KickNationsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C261557016982A7156070A7 /* KickNationsApp.swift */; };
+		403487CA67CE8BA177FE2A13 /* GameplayLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CD07A7EFED54E6F0581381 /* GameplayLogicTests.swift */; };
+		5E6AEF9AB53578F70DB6FB17 /* RoarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65AA00FE13A765338D05C6A7 /* RoarController.swift */; };
+		647B96153DB47558719F8B9A /* SkillController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C46E3B62331C602505048E9 /* SkillController.swift */; };
+		763BDC49619D3C62E1661399 /* PurchaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9340D83A319E30A280BE48E6 /* PurchaseService.swift */; };
+		781E21420F8D61551F57A099 /* AIController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF2239EF1EF2423A6B4902C2 /* AIController.swift */; };
+		80AD80850AEF6309703D3A96 /* HapticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA8B1431BCD0B97B50A4EE6 /* HapticsService.swift */; };
+		812EBB796484622F0E730FBE /* AnalyticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BB3F4A7B237A5E85980BE6D /* AnalyticsService.swift */; };
+		871E82CD51880EEA9CBA7E55 /* StoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC52B523001E4ABFD4DCEAF /* StoreView.swift */; };
+		8DC98CC9ECFA4AA6E37ECCEE /* Arena.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4810C0CA25832D7A894471 /* Arena.swift */; };
+		97DD2376B642C2BA5F29F9DB /* Color+KickNations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BC18E8F297F676E865ABA6 /* Color+KickNations.swift */; };
+		9E4F6B7B9CA9F62A3F411827 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE870ABD16A84E51447AB0 /* PersistenceService.swift */; };
+		AF6852C8652060203D51856C /* AdService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0803052D432133FC6969096 /* AdService.swift */; };
+		B5825B3F81FF54722B800EEF /* CrowdBoardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BD652ADAD83254DC24011 /* CrowdBoardNode.swift */; };
+		B65B62CBB2E6C79D3B6637D5 /* DailyChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF331BFB8DA06F5AB17F20E8 /* DailyChallenge.swift */; };
+		BD19585D5C2E622090870732 /* ReplayRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68009E1127C8E5C7F08ED63F /* ReplayRecorder.swift */; };
+		C356AA261CA1CEC355C03D71 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD77BD849F63C02126E4421 /* GameScene.swift */; };
+		C80AA43425996DA54A8375A3 /* NationSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632AE572A228357E1F715E21 /* NationSelectView.swift */; };
+		E4FA17CCE18D7D32A62B4D06 /* SeededRandomGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86A9AB16C5FEFE47C4724467 /* SeededRandomGenerator.swift */; };
+		E9EDC4E36C295615BC1D9963 /* Nation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F2BED0E446497C9B8852C /* Nation.swift */; };
+		FA3DE24345CB2F492EC670D7 /* PhysicsCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 702BF93CBFA05A44930E5124 /* PhysicsCategories.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		558E40510A6FDF20F371BBB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ECB0169DA695980D3C8C6192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 29B94D1767B3EB5B37776897;
+			remoteInfo = KickNations;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		018F2BED0E446497C9B8852C /* Nation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nation.swift; sourceTree = "<group>"; };
+		019511977D95EE44C63E1593 /* MatchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchViewModel.swift; sourceTree = "<group>"; };
+		07E8CD4C3244BF8CDFB43628 /* ArenaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArenaController.swift; sourceTree = "<group>"; };
+		1BA8B1431BCD0B97B50A4EE6 /* HapticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsService.swift; sourceTree = "<group>"; };
+		2268E0A8C765775610BA3107 /* KickNations.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = KickNations.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2BB3F4A7B237A5E85980BE6D /* AnalyticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsService.swift; sourceTree = "<group>"; };
+		2C46E3B62331C602505048E9 /* SkillController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillController.swift; sourceTree = "<group>"; };
+		3C88492D68FA4941F0AF2096 /* MatchRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchRules.swift; sourceTree = "<group>"; };
+		4276C2C476F31B1AB75D1049 /* Skill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Skill.swift; sourceTree = "<group>"; };
+		43AE3F5CB729685E9AC927C9 /* PlayerProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerProgress.swift; sourceTree = "<group>"; };
+		48BC18E8F297F676E865ABA6 /* Color+KickNations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+KickNations.swift"; sourceTree = "<group>"; };
+		54FB87B6D2CD8973E8D81025 /* ComboController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComboController.swift; sourceTree = "<group>"; };
+		5A0443A9B2BC2E8EA18A02BA /* KickNationsTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = KickNationsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E4810C0CA25832D7A894471 /* Arena.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Arena.swift; sourceTree = "<group>"; };
+		632AE572A228357E1F715E21 /* NationSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NationSelectView.swift; sourceTree = "<group>"; };
+		65AA00FE13A765338D05C6A7 /* RoarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoarController.swift; sourceTree = "<group>"; };
+		68009E1127C8E5C7F08ED63F /* ReplayRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayRecorder.swift; sourceTree = "<group>"; };
+		6C261557016982A7156070A7 /* KickNationsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KickNationsApp.swift; sourceTree = "<group>"; };
+		6C51D277533E0486B3F47E70 /* PinballArenaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinballArenaController.swift; sourceTree = "<group>"; };
+		702BF93CBFA05A44930E5124 /* PhysicsCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsCategories.swift; sourceTree = "<group>"; };
+		7BC52B523001E4ABFD4DCEAF /* StoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreView.swift; sourceTree = "<group>"; };
+		86A9AB16C5FEFE47C4724467 /* SeededRandomGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeededRandomGenerator.swift; sourceTree = "<group>"; };
+		9340D83A319E30A280BE48E6 /* PurchaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
+		9BD77BD849F63C02126E4421 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		A0699AC3073B355B3D5CB1AE /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
+		AA035DC353B0B0BCAB714758 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		ADE3AE3AABCC960A4E66049C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		BF4B314B90700A19C1AE5A86 /* ShareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareService.swift; sourceTree = "<group>"; };
+		BFF79D4EAAF9F6FD284269C8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		C75BD652ADAD83254DC24011 /* CrowdBoardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdBoardNode.swift; sourceTree = "<group>"; };
+		DD7D9ED7E809FD3B356D22B4 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		E8CD07A7EFED54E6F0581381 /* GameplayLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameplayLogicTests.swift; sourceTree = "<group>"; };
+		EF2239EF1EF2423A6B4902C2 /* AIController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIController.swift; sourceTree = "<group>"; };
+		EF331BFB8DA06F5AB17F20E8 /* DailyChallenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallenge.swift; sourceTree = "<group>"; };
+		F0803052D432133FC6969096 /* AdService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdService.swift; sourceTree = "<group>"; };
+		F0AE870ABD16A84E51447AB0 /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
+		F1C01CB38B8C6C6197C523CA /* GameCenterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterService.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		015DCCE67FDEE3FF5E430555 /* KickNationsTests */ = {
+			isa = PBXGroup;
+			children = (
+				E8CD07A7EFED54E6F0581381 /* GameplayLogicTests.swift */,
+			);
+			path = KickNationsTests;
+			sourceTree = "<group>";
+		};
+		31CC63498D95F4C62170E6A9 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				48BC18E8F297F676E865ABA6 /* Color+KickNations.swift */,
+				AA035DC353B0B0BCAB714758 /* GameView.swift */,
+				ADE3AE3AABCC960A4E66049C /* HomeView.swift */,
+				632AE572A228357E1F715E21 /* NationSelectView.swift */,
+				A0699AC3073B355B3D5CB1AE /* ResultsView.swift */,
+				BFF79D4EAAF9F6FD284269C8 /* RootView.swift */,
+				7BC52B523001E4ABFD4DCEAF /* StoreView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		5DDDF0C796D518EFDB14F977 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				DD7D9ED7E809FD3B356D22B4 /* AppRouter.swift */,
+				6C261557016982A7156070A7 /* KickNationsApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		6459B3DE339B276A1770F580 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F0803052D432133FC6969096 /* AdService.swift */,
+				2BB3F4A7B237A5E85980BE6D /* AnalyticsService.swift */,
+				F1C01CB38B8C6C6197C523CA /* GameCenterService.swift */,
+				1BA8B1431BCD0B97B50A4EE6 /* HapticsService.swift */,
+				F0AE870ABD16A84E51447AB0 /* PersistenceService.swift */,
+				9340D83A319E30A280BE48E6 /* PurchaseService.swift */,
+				BF4B314B90700A19C1AE5A86 /* ShareService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		696EDA3403D2F3DC59E5D0AD /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				EF2239EF1EF2423A6B4902C2 /* AIController.swift */,
+				07E8CD4C3244BF8CDFB43628 /* ArenaController.swift */,
+				54FB87B6D2CD8973E8D81025 /* ComboController.swift */,
+				C75BD652ADAD83254DC24011 /* CrowdBoardNode.swift */,
+				9BD77BD849F63C02126E4421 /* GameScene.swift */,
+				019511977D95EE44C63E1593 /* MatchViewModel.swift */,
+				702BF93CBFA05A44930E5124 /* PhysicsCategories.swift */,
+				6C51D277533E0486B3F47E70 /* PinballArenaController.swift */,
+				68009E1127C8E5C7F08ED63F /* ReplayRecorder.swift */,
+				65AA00FE13A765338D05C6A7 /* RoarController.swift */,
+				86A9AB16C5FEFE47C4724467 /* SeededRandomGenerator.swift */,
+				2C46E3B62331C602505048E9 /* SkillController.swift */,
+			);
+			path = Game;
+			sourceTree = "<group>";
+		};
+		74FC9C6D5AD11780D4889D95 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2268E0A8C765775610BA3107 /* KickNations.app */,
+				5A0443A9B2BC2E8EA18A02BA /* KickNationsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8560A3A2C64ABE4C0E474EC5 = {
+			isa = PBXGroup;
+			children = (
+				9FA9FD83717F999F32DA7FE4 /* KickNations */,
+				015DCCE67FDEE3FF5E430555 /* KickNationsTests */,
+				74FC9C6D5AD11780D4889D95 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9FA9FD83717F999F32DA7FE4 /* KickNations */ = {
+			isa = PBXGroup;
+			children = (
+				5DDDF0C796D518EFDB14F977 /* App */,
+				696EDA3403D2F3DC59E5D0AD /* Game */,
+				EAAE86E70DC2B7A927974C2B /* Models */,
+				6459B3DE339B276A1770F580 /* Services */,
+				31CC63498D95F4C62170E6A9 /* UI */,
+			);
+			path = KickNations;
+			sourceTree = "<group>";
+		};
+		EAAE86E70DC2B7A927974C2B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5E4810C0CA25832D7A894471 /* Arena.swift */,
+				EF331BFB8DA06F5AB17F20E8 /* DailyChallenge.swift */,
+				3C88492D68FA4941F0AF2096 /* MatchRules.swift */,
+				018F2BED0E446497C9B8852C /* Nation.swift */,
+				43AE3F5CB729685E9AC927C9 /* PlayerProgress.swift */,
+				4276C2C476F31B1AB75D1049 /* Skill.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		29B94D1767B3EB5B37776897 /* KickNations */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 55046786234F58CCFE2621F3 /* Build configuration list for PBXNativeTarget "KickNations" */;
+			buildPhases = (
+				F09B5EA60AFD5754429A071D /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KickNations;
+			packageProductDependencies = (
+			);
+			productName = KickNations;
+			productReference = 2268E0A8C765775610BA3107 /* KickNations.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7CD12FFDC35251E22C141831 /* KickNationsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 95B9D7E5FAC01CECE14BAE86 /* Build configuration list for PBXNativeTarget "KickNationsTests" */;
+			buildPhases = (
+				7D536515CD198D5A953EE449 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F80520D2B5038661D133CC38 /* PBXTargetDependency */,
+			);
+			name = KickNationsTests;
+			packageProductDependencies = (
+			);
+			productName = KickNationsTests;
+			productReference = 5A0443A9B2BC2E8EA18A02BA /* KickNationsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ECB0169DA695980D3C8C6192 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 2EF642F1795413B0FC5D5839 /* Build configuration list for PBXProject "KickNations" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8560A3A2C64ABE4C0E474EC5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				29B94D1767B3EB5B37776897 /* KickNations */,
+				7CD12FFDC35251E22C141831 /* KickNationsTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7D536515CD198D5A953EE449 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				403487CA67CE8BA177FE2A13 /* GameplayLogicTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F09B5EA60AFD5754429A071D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				781E21420F8D61551F57A099 /* AIController.swift in Sources */,
+				AF6852C8652060203D51856C /* AdService.swift in Sources */,
+				812EBB796484622F0E730FBE /* AnalyticsService.swift in Sources */,
+				143E270DFE9BF2C1D94D175E /* AppRouter.swift in Sources */,
+				8DC98CC9ECFA4AA6E37ECCEE /* Arena.swift in Sources */,
+				0134A26824889F2D7D557117 /* ArenaController.swift in Sources */,
+				97DD2376B642C2BA5F29F9DB /* Color+KickNations.swift in Sources */,
+				142F9C57DCA1A5FC783AD327 /* ComboController.swift in Sources */,
+				B5825B3F81FF54722B800EEF /* CrowdBoardNode.swift in Sources */,
+				B65B62CBB2E6C79D3B6637D5 /* DailyChallenge.swift in Sources */,
+				2050BCAC8C61220084B6F8A4 /* GameCenterService.swift in Sources */,
+				C356AA261CA1CEC355C03D71 /* GameScene.swift in Sources */,
+				17175B8A43A79CB2A7B1BE91 /* GameView.swift in Sources */,
+				80AD80850AEF6309703D3A96 /* HapticsService.swift in Sources */,
+				0DA67195FD933EA7514DD5AF /* HomeView.swift in Sources */,
+				326259446C237C24253CF648 /* KickNationsApp.swift in Sources */,
+				0B474A552C5C713BF63B3DAF /* MatchRules.swift in Sources */,
+				26FBCB3CE6CA7DA5978D16C3 /* MatchViewModel.swift in Sources */,
+				E9EDC4E36C295615BC1D9963 /* Nation.swift in Sources */,
+				C80AA43425996DA54A8375A3 /* NationSelectView.swift in Sources */,
+				9E4F6B7B9CA9F62A3F411827 /* PersistenceService.swift in Sources */,
+				FA3DE24345CB2F492EC670D7 /* PhysicsCategories.swift in Sources */,
+				2AA9994413989F2063694997 /* PinballArenaController.swift in Sources */,
+				072584AF7863EE6AC78B3E71 /* PlayerProgress.swift in Sources */,
+				763BDC49619D3C62E1661399 /* PurchaseService.swift in Sources */,
+				BD19585D5C2E622090870732 /* ReplayRecorder.swift in Sources */,
+				0E9995249FB007E739E6A9CD /* ResultsView.swift in Sources */,
+				5E6AEF9AB53578F70DB6FB17 /* RoarController.swift in Sources */,
+				0CB62A03ED642A5B8E7CC589 /* RootView.swift in Sources */,
+				E4FA17CCE18D7D32A62B4D06 /* SeededRandomGenerator.swift in Sources */,
+				081B28F13AC181C9B53ADE56 /* ShareService.swift in Sources */,
+				0BF7EC7EC8F4BFD9D5D999C5 /* Skill.swift in Sources */,
+				647B96153DB47558719F8B9A /* SkillController.swift in Sources */,
+				871E82CD51880EEA9CBA7E55 /* StoreView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F80520D2B5038661D133CC38 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 29B94D1767B3EB5B37776897 /* KickNations */;
+			targetProxy = 558E40510A6FDF20F371BBB0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		22C49448A6DDEB39C71F01FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kicknations.soccerclash.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Kick Nations.app/Kick Nations";
+			};
+			name = Release;
+		};
+		5406023131277256C7814543 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 0.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6D5452FE1024BE0A9EC5880F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Kick Nations";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kicknations.soccerclash;
+				PRODUCT_NAME = "Kick Nations";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		714705941CB763B5AF2B4794 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MARKETING_VERSION = 0.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8921DF38F3735648BB34F915 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kicknations.soccerclash.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Kick Nations.app/Kick Nations";
+			};
+			name = Debug;
+		};
+		CE6B694EBA14BDDF4F45A205 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Kick Nations";
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kicknations.soccerclash;
+				PRODUCT_NAME = "Kick Nations";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2EF642F1795413B0FC5D5839 /* Build configuration list for PBXProject "KickNations" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5406023131277256C7814543 /* Debug */,
+				714705941CB763B5AF2B4794 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		55046786234F58CCFE2621F3 /* Build configuration list for PBXNativeTarget "KickNations" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE6B694EBA14BDDF4F45A205 /* Debug */,
+				6D5452FE1024BE0A9EC5880F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		95B9D7E5FAC01CECE14BAE86 /* Build configuration list for PBXNativeTarget "KickNationsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8921DF38F3735648BB34F915 /* Debug */,
+				22C49448A6DDEB39C71F01FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = ECB0169DA695980D3C8C6192 /* Project object */;
+}
