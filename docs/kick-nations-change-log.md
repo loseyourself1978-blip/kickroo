@@ -48,3 +48,14 @@
 已知限制：
 
 - GitHub 远端 `loseyourself1978-blip/KickNations` 尚未创建或推送，因为当前机器未安装 GitHub CLI `gh`，需要后续联网安装/登录授权。
+
+## GitHub 上传阻塞 / 2026-05-14
+
+状态：阻塞，等待用户完成 GitHub MFA/授权。
+
+说明：
+
+- 已联网检查 `https://github.com/loseyourself1978-blip/KickNations.git`，返回 `Repository not found`。
+- 已尝试通过 GitHub 连接器安装/授权创建仓库，但用户反馈 MFA 验证失败。
+- 当前不会绕过认证，也不会上传到其他仓库。
+- 本地代码、文档、测试、验收报告已完成；GitHub 创建仓库和推送需要 MFA 成功后继续。
