@@ -1,36 +1,24 @@
 import Foundation
 
 enum GameMode: String, CaseIterable, Identifiable, Codable {
-    case quickKick
-    case dailyClash
-    case roastReplay
-    case partyMode
+    case globalCup
 
     var id: String { rawValue }
 
     var displayName: String {
-        switch self {
-        case .quickKick: "Quick Match"
-        case .dailyClash: "Daily Rally"
-        case .roastReplay: "Replay Lab"
-        case .partyMode: "Pinball Rush"
-        }
+        "Global Cup 48"
     }
 
     var symbolName: String {
-        switch self {
-        case .quickKick: "bolt.fill"
-        case .dailyClash: "calendar"
-        case .roastReplay: "film.stack"
-        case .partyMode: "person.2.fill"
-        }
+        "globe.americas.fill"
     }
 
     var duration: TimeInterval {
-        switch self {
-        case .roastReplay: 30
-        default: 45
-        }
+        50
+    }
+
+    var shortRule: String {
+        "12 groups, 32-team bracket"
     }
 }
 
@@ -39,9 +27,71 @@ struct MatchRules: Codable, Equatable {
     let goldenGoalDuration: TimeInterval
     let maxGoals: Int?
     let arenaID: ArenaID
+    let allowsDraw: Bool
+    let requiresWinner: Bool
+    let blockerCount: Int
+    let movingBlockerCount: Int
+    let reboundMultiplier: Double
+    let launchPowerMultiplier: Double
+    let opponentCadence: TimeInterval
+    let phaseLabel: String?
 
-    static func standard(arenaID: ArenaID, duration: TimeInterval = 30, maxGoals: Int? = nil) -> MatchRules {
-        MatchRules(duration: duration, goldenGoalDuration: 10, maxGoals: maxGoals, arenaID: arenaID)
+    static func standard(
+        arenaID: ArenaID,
+        duration: TimeInterval = 30,
+        maxGoals: Int? = nil,
+        allowsDraw: Bool = false,
+        requiresWinner: Bool = false,
+        blockerCount: Int = 8,
+        movingBlockerCount: Int = 2,
+        reboundMultiplier: Double = 1,
+        launchPowerMultiplier: Double = 1,
+        opponentCadence: TimeInterval = 0.9,
+        phaseLabel: String? = nil
+    ) -> MatchRules {
+        MatchRules(
+            duration: duration,
+            goldenGoalDuration: requiresWinner ? 60 : 10,
+            maxGoals: maxGoals,
+            arenaID: arenaID,
+            allowsDraw: allowsDraw,
+            requiresWinner: requiresWinner,
+            blockerCount: blockerCount,
+            movingBlockerCount: movingBlockerCount,
+            reboundMultiplier: reboundMultiplier,
+            launchPowerMultiplier: launchPowerMultiplier,
+            opponentCadence: opponentCadence,
+            phaseLabel: phaseLabel
+        )
+    }
+
+    static func globalCup(arenaID: ArenaID, context: GlobalCupContext) -> MatchRules {
+        .standard(
+            arenaID: arenaID,
+            duration: GameMode.globalCup.duration,
+            allowsDraw: !context.stage.isKnockout,
+            requiresWinner: context.stage.isKnockout,
+            blockerCount: context.stage.isKnockout ? 12 : 10,
+            movingBlockerCount: context.stage.isKnockout ? 7 : 5,
+            reboundMultiplier: context.stage.isKnockout ? 1.50 : 1.42,
+            launchPowerMultiplier: context.stage.isKnockout ? 2.65 : 2.45,
+            opponentCadence: context.stage.isKnockout ? 0.78 : 0.84,
+            phaseLabel: context.stage.displayName
+        )
+    }
+
+    static func cupPractice(arenaID: ArenaID) -> MatchRules {
+        .standard(
+            arenaID: arenaID,
+            duration: 60,
+            allowsDraw: true,
+            blockerCount: 8,
+            movingBlockerCount: 3,
+            reboundMultiplier: 1.38,
+            launchPowerMultiplier: 2.35,
+            opponentCadence: 1.05,
+            phaseLabel: "Practice First Match"
+        )
     }
 }
 
@@ -53,6 +103,8 @@ struct MatchConfiguration: Identifiable, Codable, Equatable {
     let arenaID: ArenaID
     let seed: UInt64
     let rules: MatchRules
+    let cupContext: GlobalCupContext?
+    let isPractice: Bool
 
     init(
         id: UUID = UUID(),
@@ -61,7 +113,9 @@ struct MatchConfiguration: Identifiable, Codable, Equatable {
         opponentNationID: NationID,
         arenaID: ArenaID,
         seed: UInt64,
-        rules: MatchRules
+        rules: MatchRules,
+        cupContext: GlobalCupContext? = nil,
+        isPractice: Bool = false
     ) {
         self.id = id
         self.mode = mode
@@ -70,6 +124,8 @@ struct MatchConfiguration: Identifiable, Codable, Equatable {
         self.arenaID = arenaID
         self.seed = seed
         self.rules = rules
+        self.cupContext = cupContext
+        self.isPractice = isPractice
     }
 }
 
@@ -90,6 +146,7 @@ struct MatchSnapshot: Equatable {
     var maxCombo: Int
     var isOvertime: Bool
     var phaseName: String
+    var phaseDetail: String
 
     static let empty = MatchSnapshot(
         playerScore: 0,
@@ -101,7 +158,8 @@ struct MatchSnapshot: Equatable {
         combo: 0,
         maxCombo: 0,
         isOvertime: false,
-        phaseName: "Kickoff"
+        phaseName: "Kickoff",
+        phaseDetail: "Aim + hold"
     )
 }
 

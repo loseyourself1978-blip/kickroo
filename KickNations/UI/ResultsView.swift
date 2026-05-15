@@ -40,6 +40,12 @@ struct ResultsView: View {
                 .padding(16)
                 .background(Color.knPanel, in: RoundedRectangle(cornerRadius: 8))
 
+                if !result.configuration.isPractice {
+                    cupStatusPanel
+                } else if result.configuration.isPractice {
+                    practicePanel
+                }
+
                 Spacer()
 
                 ShareLink(item: shareText) {
@@ -52,17 +58,49 @@ struct ResultsView: View {
                 .tint(Color.knGold)
                 .foregroundStyle(.black)
 
-                HStack(spacing: 12) {
+                if result.configuration.isPractice {
                     Button {
-                        router.startMatch(mode: result.configuration.mode, nationID: result.configuration.playerNationID)
+                        router.startMatch(mode: .globalCup, nationID: result.configuration.playerNationID)
                     } label: {
-                        Label("Again", systemImage: "arrow.clockwise")
+                        Label("Start Official Cup", systemImage: "play.fill")
                             .font(.headline.weight(.bold))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50)
+                            .frame(height: 52)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.white.opacity(0.35))
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.knGold)
+                    .foregroundStyle(.black)
+                } else if let campaign = router.cupCampaign {
+                    Button {
+                        if campaign.canContinue {
+                            router.continueGlobalCup()
+                        } else {
+                            router.showHome()
+                        }
+                    } label: {
+                        Label(campaign.canContinue ? "Continue Cup" : "Cup Complete", systemImage: campaign.canContinue ? "arrow.right.circle.fill" : "checkmark.seal.fill")
+                            .font(.headline.weight(.bold))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 52)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.knMint)
+                    .foregroundStyle(.black)
+                }
+
+                HStack(spacing: 12) {
+                    if result.configuration.isPractice {
+                        Button {
+                            router.startCupPractice(nationID: result.configuration.playerNationID)
+                        } label: {
+                            Label("Again", systemImage: "arrow.clockwise")
+                                .font(.headline.weight(.bold))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 50)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.white.opacity(0.35))
+                    }
 
                     Button {
                         router.showHome()
@@ -90,6 +128,44 @@ struct ResultsView: View {
 
     private var shareText: String {
         "Kick Nations: \(playerNation.shortCode) \(result.playerScore)-\(result.opponentScore) \(opponentNation.shortCode). Max combo \(result.maxCombo). \(result.headline)"
+    }
+
+    private var cupStatusPanel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label(result.configuration.cupContext?.stage.displayName ?? "Global Cup", systemImage: "globe.americas.fill")
+                    .font(.headline.weight(.black))
+                    .foregroundStyle(Color.knGold)
+                Spacer()
+                if let campaign = router.cupCampaign {
+                    Text(campaign.stage.displayName)
+                        .font(.caption.weight(.heavy))
+                        .foregroundStyle(.white.opacity(0.62))
+                        .textCase(.uppercase)
+                }
+            }
+
+            Text(router.cupCampaign?.lastSummary ?? result.configuration.cupContext?.standingSummary ?? "Cup table updated")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.72))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(14)
+        .background(Color.knPanelAlt, in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var practicePanel: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("Practice Complete", systemImage: "graduationcap.fill")
+                .font(.headline.weight(.black))
+                .foregroundStyle(Color.knGold)
+            Text("This match did not change your cup table. Start the official run when the aim, power, roar, and rebounds feel good.")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.72))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(14)
+        .background(Color.knPanelAlt, in: RoundedRectangle(cornerRadius: 8))
     }
 }
 

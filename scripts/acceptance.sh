@@ -63,8 +63,16 @@ write_report() {
         <img src="screenshots/home.png" alt="Home screenshot">
       </section>
       <section class="panel">
-        <h2>Quick Match</h2>
-        <img src="screenshots/game.png" alt="Game screenshot">
+        <h2>First Match Tutorial</h2>
+        <img src="screenshots/tutorial.png" alt="Tutorial screenshot">
+      </section>
+      <section class="panel">
+        <h2>Practice First</h2>
+        <img src="screenshots/practice.png" alt="Practice match screenshot">
+      </section>
+      <section class="panel">
+        <h2>Official Cup</h2>
+        <img src="screenshots/cup.png" alt="Official cup screenshot">
       </section>
     </div>
     <section class="panel">
@@ -97,14 +105,25 @@ run_step "debug build" xcodebuild -project KickNations.xcodeproj -scheme "$SCHEM
 
 APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/Kick Nations.app"
 run_step "install app" xcrun simctl install "$DEVICE_ID" "$APP_PATH"
-run_step "launch home" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID"
+run_step "launch home" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -disableAudio
 sleep 3
 run_step "screenshot home" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/home.png"
 
 xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
-run_step "launch quick match" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokeQuickKick
+run_step "launch first tutorial" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokePractice -showTutorial -disableAudio
+sleep 3
+run_step "screenshot tutorial" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/tutorial.png"
+
+xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
+run_step "launch practice match" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokePractice -skipTutorial -disableAudio
 sleep 4
-run_step "screenshot game" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/game.png"
+screenshot_practice="$SCREENSHOT_DIR/practice.png"
+run_step "screenshot practice" xcrun simctl io "$DEVICE_ID" screenshot "$screenshot_practice"
+
+xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
+run_step "launch official cup" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokeCup -skipTutorial -disableAudio
+sleep 4
+run_step "screenshot cup" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/cup.png"
 
 status_color="#17B978"
 write_report "PASSED"

@@ -65,11 +65,11 @@ final class RoarController {
         let origin: CGPoint
         switch lane {
         case .left:
-            origin = CGPoint(x: fieldRect.minX, y: fieldRect.midY)
+            origin = CGPoint(x: fieldRect.minX + fieldRect.width * 0.18, y: fieldRect.minY + 8)
         case .center:
-            origin = CGPoint(x: fieldRect.midX, y: fieldRect.midY)
+            origin = CGPoint(x: fieldRect.midX, y: fieldRect.minY + 8)
         case .right:
-            origin = CGPoint(x: fieldRect.maxX, y: fieldRect.midY)
+            origin = CGPoint(x: fieldRect.maxX - fieldRect.width * 0.18, y: fieldRect.minY + 8)
         }
 
         let wave = SoundWave(
@@ -78,11 +78,10 @@ final class RoarController {
             startedAt: currentTime,
             duration: 0.72,
             maxRadius: max(fieldRect.width, fieldRect.height) * 0.86,
-            force: lane == .center ? 38 : 52,
+            force: lane == .center ? 58 : 66,
             curve: curveBonus
         )
         activeWaves.append(wave)
         return wave
     }
 }
-

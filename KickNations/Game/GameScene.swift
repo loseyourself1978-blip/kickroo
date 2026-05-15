@@ -7,7 +7,6 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
     private enum TouchMode {
         case aiming
-        case crowd
     }
 
     private let configuration: MatchConfiguration
@@ -15,23 +14,24 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     private let opponentNation: Nation
     private let comboController = ComboController()
     private let roarController = RoarController()
+    private let audioService = ProceduralAudioService.shared
     private var generator: SeededRandomGenerator
 
     private var fieldRect = CGRect.zero
-    private var crowdRect = CGRect.zero
     private var configuredSize = CGSize.zero
 
-    private let strikerRadius: CGFloat = 24
-    private let opponentRadius: CGFloat = 22
-    private let ballRadius: CGFloat = 14
+    private let strikerRadius: CGFloat = 25
+    private let opponentRadius: CGFloat = 24
+    private let ballRadius: CGFloat = 15
 
     private var strikerNode = SKShapeNode()
     private var opponentNode = SKShapeNode()
     private var ballNode = SKShapeNode()
     private var aimArrowNode = SKShapeNode()
     private var guideLineNode = SKShapeNode()
+    private var powerBarBackNode = SKShapeNode()
+    private var powerBarFillNode = SKShapeNode()
     private var shieldNode: SKShapeNode?
-    private var crowdBoard: CrowdBoardNode?
     private var roarButtonNodes: [RoarLane: SKShapeNode] = [:]
 
     private var absoluteStartTime: TimeInterval?
@@ -52,11 +52,13 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
     private var touchMode: TouchMode?
     private var currentTouchLocation = CGPoint.zero
+    private var aimChargeStartTime: TimeInterval?
     private var pendingPowerMultiplier: CGFloat = 1
     private var curveBonusUntil: TimeInterval = 0
     private var cleanBounceUntil: TimeInterval = 0
     private var shieldUntil: TimeInterval = 0
     private var turboUntil: TimeInterval = 0
+    private var lastContactSoundTime: TimeInterval = -10
 
     init(size: CGSize, configuration: MatchConfiguration) {
         self.configuration = configuration
@@ -76,6 +78,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         physicsWorld.speed = 1.0
         physicsWorld.contactDelegate = self
         configureIfNeeded()
+        audioService.play(.crowdLoop)
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -102,12 +105,13 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         updateOpponent(currentTime: currentTime)
         updateShield(currentTime: currentTime)
         updateBallSafety(currentTime: currentTime)
+        updateAimCharge()
         updateGuide()
         emitSnapshot()
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard configuration.mode != .roastReplay, !isMatchFinished, let touch = touches.first else { return }
+        guard !isMatchFinished, let touch = touches.first else { return }
         let location = touch.location(in: self)
 
         if let lane = roarLane(at: location) {
@@ -115,15 +119,11 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
 
-        if crowdBoard?.handleTouchBegan(at: location) == true {
-            touchMode = .crowd
-            return
-        }
-
-        guard canPlayerLaunch, location.distance(to: strikerNode.position) <= strikerRadius * 2.5 else { return }
+        guard canPlayerLaunch, fieldRect.contains(location) else { return }
         touchMode = .aiming
-        currentTouchLocation = location
-        updateAimArrow(to: location)
+        currentTouchLocation = clamp(location, inset: 24)
+        aimChargeStartTime = sceneTime
+        updateAimArrow(to: currentTouchLocation)
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -132,10 +132,8 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
         switch touchMode {
         case .aiming:
-            currentTouchLocation = location
-            updateAimArrow(to: location)
-        case .crowd:
-            crowdBoard?.handleTouchMoved(to: location)
+            currentTouchLocation = clamp(location, inset: 24)
+            updateAimArrow(to: currentTouchLocation)
         case nil:
             break
         }
@@ -146,8 +144,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         case .aiming:
             launchStriker(from: currentTouchLocation)
             aimArrowNode.path = nil
-        case .crowd:
-            crowdBoard?.handleTouchEnded()
+            hidePowerBar()
         case nil:
             break
         }
@@ -155,11 +152,9 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if touchMode == .crowd {
-            crowdBoard?.handleTouchEnded()
-        }
         touchMode = nil
         aimArrowNode.path = nil
+        hidePowerBar()
     }
 
     func activatePlayerSkill() {
@@ -205,6 +200,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         drawWave(wave)
         addBurst(at: wave.origin, color: UIColor(hex: "#F2C14E"))
         lastSkillImpactTime = sceneTime
+        audioService.play(.roar)
     }
 
     func didBegin(_ contact: SKPhysicsContact) {
@@ -222,6 +218,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         }
 
         if has(a, b, PhysicsCategory.ball, PhysicsCategory.striker) {
+            playContactSound()
             awardSkillEnergy(18)
             if pendingPowerMultiplier > 1 {
                 applyBallVelocityMultiplier(pendingPowerMultiplier, curve: 0)
@@ -234,10 +231,12 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         }
 
         if has(a, b, PhysicsCategory.ball, PhysicsCategory.wall) {
+            playContactSound()
             comboController.registerHit(named: "wall")
         }
 
         if has(a, b, PhysicsCategory.ball, PhysicsCategory.arenaEffect) {
+            playContactSound()
             let effectNode = a == PhysicsCategory.arenaEffect ? nodeA : nodeB
             handleArenaEffectContact(effectNode)
         }
@@ -255,25 +254,20 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         roarButtonNodes.removeAll()
         shieldNode = nil
 
-        crowdRect = CGRect(
-            x: 16,
-            y: 22,
-            width: size.width - 32,
-            height: max(156, size.height * 0.25)
-        )
+        let bottomInset: CGFloat = 86
+        let topInset: CGFloat = 82
         fieldRect = CGRect(
             x: 16,
-            y: crowdRect.maxY + 16,
+            y: bottomInset,
             width: size.width - 32,
-            height: size.height - crowdRect.maxY - 116
+            height: size.height - bottomInset - topInset
         )
 
         drawBackground()
         drawField()
         createPhysicsBounds()
-        PinballArenaController(arenaID: configuration.arenaID).build(in: self, fieldRect: fieldRect)
+        PinballArenaController(arenaID: configuration.arenaID, rules: configuration.rules, seed: configuration.seed).build(in: self, fieldRect: fieldRect)
         createActors()
-        createCrowdBoard()
         createRoarButtons()
         resetPositions()
         emitSnapshot()
@@ -287,11 +281,11 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         glow.zPosition = -50
         addChild(glow)
 
-        let crowdBand = SKShapeNode(rect: CGRect(x: 0, y: 0, width: size.width, height: crowdRect.maxY + 8))
-        crowdBand.fillColor = UIColor(hex: "#101622")
-        crowdBand.strokeColor = .clear
-        crowdBand.zPosition = -40
-        addChild(crowdBand)
+        let cupGlow = SKShapeNode(rect: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        cupGlow.fillColor = UIColor(hex: "#0A1730").withAlphaComponent(0.30)
+        cupGlow.strokeColor = .clear
+        cupGlow.zPosition = -45
+        addChild(cupGlow)
     }
 
     private func drawField() {
@@ -302,14 +296,14 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         field.zPosition = -20
         addChild(field)
 
-        let stripeCount = 8
+        let stripeCount = 9
         for index in 0..<stripeCount {
-            let stripeWidth = fieldRect.width / CGFloat(stripeCount)
+            let stripeHeight = fieldRect.height / CGFloat(stripeCount)
             let stripe = SKShapeNode(rect: CGRect(
-                x: fieldRect.minX + CGFloat(index) * stripeWidth,
-                y: fieldRect.minY,
-                width: stripeWidth,
-                height: fieldRect.height
+                x: fieldRect.minX,
+                y: fieldRect.minY + CGFloat(index) * stripeHeight,
+                width: fieldRect.width,
+                height: stripeHeight
             ))
             stripe.fillColor = UIColor.white.withAlphaComponent(index.isMultiple(of: 2) ? 0.025 : 0.0)
             stripe.strokeColor = .clear
@@ -318,8 +312,8 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         }
 
         let centerPath = CGMutablePath()
-        centerPath.move(to: CGPoint(x: fieldRect.midX, y: fieldRect.minY))
-        centerPath.addLine(to: CGPoint(x: fieldRect.midX, y: fieldRect.maxY))
+        centerPath.move(to: CGPoint(x: fieldRect.minX, y: fieldRect.midY))
+        centerPath.addLine(to: CGPoint(x: fieldRect.maxX, y: fieldRect.midY))
         let centerLine = SKShapeNode(path: centerPath)
         centerLine.strokeColor = UIColor.white.withAlphaComponent(0.18)
         centerLine.lineWidth = 2
@@ -333,38 +327,114 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         centerCircle.zPosition = -18
         addChild(centerCircle)
 
-        addChild(goalNode(name: "leftGoal", x: fieldRect.minX + 4))
-        addChild(goalNode(name: "rightGoal", x: fieldRect.maxX - 4))
+        drawPenaltyBox(isTop: true)
+        drawPenaltyBox(isTop: false)
+        addChild(goalNode(name: "topGoal", y: fieldRect.maxY - 5, isTop: true))
+        addChild(goalNode(name: "bottomGoal", y: fieldRect.minY + 5, isTop: false))
     }
 
-    private func goalNode(name: String, x: CGFloat) -> SKShapeNode {
-        let goalSize = CGSize(width: 14, height: min(144, fieldRect.height * 0.29))
-        let node = SKShapeNode(rectOf: goalSize, cornerRadius: 4)
-        node.name = name
-        node.position = CGPoint(x: x, y: fieldRect.midY)
-        node.fillColor = UIColor.white.withAlphaComponent(0.08)
-        node.strokeColor = UIColor.white.withAlphaComponent(0.25)
-        node.lineWidth = 2
-        node.physicsBody = SKPhysicsBody(rectangleOf: goalSize)
-        node.physicsBody?.isDynamic = false
-        node.physicsBody?.categoryBitMask = PhysicsCategory.goal
-        node.physicsBody?.contactTestBitMask = PhysicsCategory.ball
-        node.physicsBody?.collisionBitMask = 0
-        node.zPosition = -10
-        return node
+    private func drawPenaltyBox(isTop: Bool) {
+        let boxSize = CGSize(width: fieldRect.width * 0.50, height: fieldRect.height * 0.14)
+        let y = isTop ? fieldRect.maxY - boxSize.height / 2 : fieldRect.minY + boxSize.height / 2
+        let box = SKShapeNode(rectOf: boxSize, cornerRadius: 16)
+        box.position = CGPoint(x: fieldRect.midX, y: y)
+        box.strokeColor = UIColor.white.withAlphaComponent(0.17)
+        box.fillColor = .clear
+        box.lineWidth = 2
+        box.zPosition = -17
+        addChild(box)
+    }
+
+    private func goalNode(name: String, y: CGFloat, isTop: Bool) -> SKNode {
+        let container = SKNode()
+        container.name = name
+        container.position = CGPoint(x: fieldRect.midX, y: y)
+        container.zPosition = 3
+
+        let mouthWidth = min(170, fieldRect.width * 0.50)
+        let netDepth: CGFloat = 38
+        let postHeight: CGFloat = 42
+        let postWidth: CGFloat = 8
+        let direction: CGFloat = isTop ? -1 : 1
+
+        let netRect = CGRect(x: -mouthWidth / 2, y: direction < 0 ? -netDepth : 0, width: mouthWidth, height: netDepth)
+        let net = SKShapeNode(rect: netRect, cornerRadius: 4)
+        net.fillColor = UIColor.white.withAlphaComponent(0.07)
+        net.strokeColor = UIColor.white.withAlphaComponent(0.30)
+        net.lineWidth = 2
+        net.zPosition = -1
+        container.addChild(net)
+
+        let meshPath = CGMutablePath()
+        let step: CGFloat = 18
+        var x = netRect.minX + step
+        while x < netRect.maxX {
+            meshPath.move(to: CGPoint(x: x, y: netRect.minY))
+            meshPath.addLine(to: CGPoint(x: x, y: netRect.maxY))
+            x += step
+        }
+        var meshY = netRect.minY + step
+        while meshY < netRect.maxY {
+            meshPath.move(to: CGPoint(x: netRect.minX, y: meshY))
+            meshPath.addLine(to: CGPoint(x: netRect.maxX, y: meshY))
+            meshY += step
+        }
+        let mesh = SKShapeNode(path: meshPath)
+        mesh.strokeColor = UIColor.white.withAlphaComponent(0.18)
+        mesh.lineWidth = 1
+        mesh.zPosition = 0
+        container.addChild(mesh)
+
+        let crossbar = goalPost(size: CGSize(width: mouthWidth + postWidth, height: postWidth), name: "goalPostBumper")
+        crossbar.position = CGPoint(x: 0, y: 0)
+        container.addChild(crossbar)
+
+        for x in [-mouthWidth / 2, mouthWidth / 2] {
+            let post = goalPost(size: CGSize(width: postWidth, height: postHeight), name: "goalPostBumper")
+            post.position = CGPoint(x: x, y: direction * postHeight / 2)
+            container.addChild(post)
+        }
+
+        let trigger = SKNode()
+        trigger.name = name
+        trigger.position = CGPoint(x: 0, y: direction * netDepth * 0.46)
+        trigger.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: mouthWidth - 20, height: netDepth * 0.74))
+        trigger.physicsBody?.isDynamic = false
+        trigger.physicsBody?.categoryBitMask = PhysicsCategory.goal
+        trigger.physicsBody?.contactTestBitMask = PhysicsCategory.ball
+        trigger.physicsBody?.collisionBitMask = 0
+        container.addChild(trigger)
+
+        return container
+    }
+
+    private func goalPost(size: CGSize, name: String) -> SKShapeNode {
+        let post = SKShapeNode(rectOf: size, cornerRadius: min(size.width, size.height) / 2)
+        post.name = name
+        post.fillColor = UIColor(hex: "#F2C14E")
+        post.strokeColor = UIColor.white.withAlphaComponent(0.95)
+        post.lineWidth = 2
+        post.physicsBody = SKPhysicsBody(rectangleOf: size)
+        post.physicsBody?.isDynamic = false
+        post.physicsBody?.restitution = 1.78
+        post.physicsBody?.categoryBitMask = PhysicsCategory.arenaEffect
+        post.physicsBody?.contactTestBitMask = PhysicsCategory.ball
+        post.physicsBody?.collisionBitMask = PhysicsCategory.ball | PhysicsCategory.striker | PhysicsCategory.opponent
+        post.zPosition = 5
+        return post
     }
 
     private func createPhysicsBounds() {
         let wallThickness: CGFloat = 10
-        let goalGap = min(150, fieldRect.height * 0.30)
-        let segment = (fieldRect.height - goalGap) / 2
+        let goalGap = min(180, fieldRect.width * 0.54)
+        let sideSegment = (fieldRect.width - goalGap) / 2
 
-        addWall(center: CGPoint(x: fieldRect.midX, y: fieldRect.minY), size: CGSize(width: fieldRect.width, height: wallThickness))
-        addWall(center: CGPoint(x: fieldRect.midX, y: fieldRect.maxY), size: CGSize(width: fieldRect.width, height: wallThickness))
-        addWall(center: CGPoint(x: fieldRect.minX, y: fieldRect.minY + segment / 2), size: CGSize(width: wallThickness, height: segment))
-        addWall(center: CGPoint(x: fieldRect.minX, y: fieldRect.maxY - segment / 2), size: CGSize(width: wallThickness, height: segment))
-        addWall(center: CGPoint(x: fieldRect.maxX, y: fieldRect.minY + segment / 2), size: CGSize(width: wallThickness, height: segment))
-        addWall(center: CGPoint(x: fieldRect.maxX, y: fieldRect.maxY - segment / 2), size: CGSize(width: wallThickness, height: segment))
+        addWall(center: CGPoint(x: fieldRect.minX, y: fieldRect.midY), size: CGSize(width: wallThickness, height: fieldRect.height))
+        addWall(center: CGPoint(x: fieldRect.maxX, y: fieldRect.midY), size: CGSize(width: wallThickness, height: fieldRect.height))
+        addWall(center: CGPoint(x: fieldRect.minX + sideSegment / 2, y: fieldRect.minY), size: CGSize(width: sideSegment, height: wallThickness))
+        addWall(center: CGPoint(x: fieldRect.maxX - sideSegment / 2, y: fieldRect.minY), size: CGSize(width: sideSegment, height: wallThickness))
+        addWall(center: CGPoint(x: fieldRect.minX + sideSegment / 2, y: fieldRect.maxY), size: CGSize(width: sideSegment, height: wallThickness))
+        addWall(center: CGPoint(x: fieldRect.maxX - sideSegment / 2, y: fieldRect.maxY), size: CGSize(width: sideSegment, height: wallThickness))
     }
 
     private func addWall(center: CGPoint, size: CGSize) {
@@ -372,7 +442,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         wall.position = center
         wall.physicsBody = SKPhysicsBody(rectangleOf: size)
         wall.physicsBody?.isDynamic = false
-        wall.physicsBody?.restitution = 0.90
+        wall.physicsBody?.restitution = min(1.35, 0.90 * CGFloat(configuration.rules.reboundMultiplier))
         wall.physicsBody?.categoryBitMask = PhysicsCategory.wall
         wall.physicsBody?.contactTestBitMask = PhysicsCategory.ball
         wall.physicsBody?.collisionBitMask = PhysicsCategory.striker | PhysicsCategory.opponent | PhysicsCategory.ball
@@ -393,46 +463,106 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         guideLineNode.lineWidth = 2
         guideLineNode.zPosition = 29
 
+        powerBarBackNode.zPosition = 31
+        powerBarBackNode.fillColor = UIColor.black.withAlphaComponent(0.52)
+        powerBarBackNode.strokeColor = UIColor.white.withAlphaComponent(0.20)
+        powerBarBackNode.lineWidth = 1.5
+        powerBarBackNode.isHidden = true
+
+        powerBarFillNode.zPosition = 32
+        powerBarFillNode.fillColor = UIColor(hex: "#F2C14E")
+        powerBarFillNode.strokeColor = .clear
+        powerBarFillNode.isHidden = true
+
         addChild(strikerNode)
         addChild(opponentNode)
         addChild(ballNode)
         addChild(guideLineNode)
         addChild(aimArrowNode)
+        addChild(powerBarBackNode)
+        addChild(powerBarFillNode)
     }
 
     private func characterNode(for nation: Nation, radius: CGFloat, category: UInt32, label: String) -> SKShapeNode {
         let node = SKShapeNode(circleOfRadius: radius)
         node.name = category == PhysicsCategory.striker ? "striker" : "opponent"
-        node.fillColor = UIColor(hex: nation.palette.primaryHex)
+        node.fillColor = UIColor(hex: "#F2C79B")
         node.strokeColor = UIColor(hex: nation.palette.secondaryHex)
         node.lineWidth = 4
         node.physicsBody = SKPhysicsBody(circleOfRadius: radius)
-        node.physicsBody?.mass = category == PhysicsCategory.striker ? 0.86 : 1.0
-        node.physicsBody?.linearDamping = 1.55
-        node.physicsBody?.angularDamping = 1.6
-        node.physicsBody?.restitution = 0.58
+        node.physicsBody?.mass = category == PhysicsCategory.striker ? 1.05 : 1.0
+        node.physicsBody?.linearDamping = 0.90
+        node.physicsBody?.angularDamping = 0.85
+        node.physicsBody?.restitution = min(1.45, 0.74 * CGFloat(configuration.rules.reboundMultiplier))
         node.physicsBody?.allowsRotation = true
         node.physicsBody?.categoryBitMask = category
         node.physicsBody?.contactTestBitMask = PhysicsCategory.ball | PhysicsCategory.arenaEffect
         node.physicsBody?.collisionBitMask = PhysicsCategory.wall | PhysicsCategory.ball | PhysicsCategory.striker | PhysicsCategory.opponent | PhysicsCategory.arenaEffect
         node.zPosition = 8
 
-        let scarf = SKShapeNode(rectOf: CGSize(width: radius * 1.15, height: radius * 0.24), cornerRadius: radius * 0.08)
-        scarf.position = CGPoint(x: 0, y: -radius * 0.18)
-        scarf.fillColor = UIColor(hex: nation.palette.secondaryHex)
-        scarf.strokeColor = .clear
-        scarf.zRotation = -0.12
-        scarf.zPosition = 9
-        node.addChild(scarf)
+        let hair = SKShapeNode(ellipseOf: CGSize(width: radius * 1.55, height: radius * 0.72))
+        hair.position = CGPoint(x: 0, y: radius * 0.32)
+        hair.fillColor = UIColor(hex: "#1B202B")
+        hair.strokeColor = .clear
+        hair.zPosition = 9
+        node.addChild(hair)
+
+        let face = SKShapeNode(circleOfRadius: radius * 0.64)
+        face.position = CGPoint(x: 0, y: radius * 0.18)
+        face.fillColor = UIColor(hex: "#F2C79B")
+        face.strokeColor = UIColor.white.withAlphaComponent(0.45)
+        face.lineWidth = 1.4
+        face.zPosition = 10
+        node.addChild(face)
+
+        let jersey = SKShapeNode(rectOf: CGSize(width: radius * 1.55, height: radius * 0.86), cornerRadius: radius * 0.24)
+        jersey.position = CGPoint(x: 0, y: -radius * 0.58)
+        jersey.fillColor = UIColor(hex: nation.palette.primaryHex)
+        jersey.strokeColor = UIColor(hex: nation.palette.secondaryHex)
+        jersey.lineWidth = 2
+        jersey.zPosition = 11
+        node.addChild(jersey)
+
+        let sash = SKShapeNode(rectOf: CGSize(width: radius * 1.22, height: radius * 0.18), cornerRadius: radius * 0.07)
+        sash.position = CGPoint(x: 0, y: -radius * 0.50)
+        sash.fillColor = UIColor(hex: nation.palette.secondaryHex)
+        sash.strokeColor = .clear
+        sash.zRotation = -0.16
+        sash.zPosition = 12
+        node.addChild(sash)
+
+        let leftEye = SKShapeNode(circleOfRadius: radius * 0.07)
+        leftEye.position = CGPoint(x: -radius * 0.19, y: radius * 0.25)
+        leftEye.fillColor = UIColor(hex: "#101622")
+        leftEye.strokeColor = .clear
+        leftEye.zPosition = 13
+        node.addChild(leftEye)
+
+        let rightEye = SKShapeNode(circleOfRadius: radius * 0.07)
+        rightEye.position = CGPoint(x: radius * 0.19, y: radius * 0.25)
+        rightEye.fillColor = UIColor(hex: "#101622")
+        rightEye.strokeColor = .clear
+        rightEye.zPosition = 13
+        node.addChild(rightEye)
+
+        let nationalTrait = SKLabelNode(text: nationalTraitSymbol(for: nation))
+        nationalTrait.fontName = "AvenirNext-Heavy"
+        nationalTrait.fontSize = radius * 0.44
+        nationalTrait.fontColor = UIColor(hex: nation.palette.accentHex)
+        nationalTrait.verticalAlignmentMode = .center
+        nationalTrait.horizontalAlignmentMode = .center
+        nationalTrait.position = CGPoint(x: 0, y: -radius * 0.58)
+        nationalTrait.zPosition = 14
+        node.addChild(nationalTrait)
 
         let code = SKLabelNode(text: nation.shortCode)
         code.fontName = "AvenirNext-Heavy"
-        code.fontSize = radius * 0.38
+        code.fontSize = radius * 0.28
         code.fontColor = UIColor(hex: nation.palette.accentHex)
         code.verticalAlignmentMode = .center
         code.horizontalAlignmentMode = .center
-        code.position = CGPoint(x: 0, y: radius * 0.13)
-        code.zPosition = 10
+        code.position = CGPoint(x: 0, y: -radius * 0.94)
+        code.zPosition = 14
         node.addChild(code)
 
         let tag = SKLabelNode(text: label)
@@ -447,42 +577,85 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         return node
     }
 
+    private func nationalTraitSymbol(for nation: Nation) -> String {
+        switch nation.id {
+        case .usa: "★"
+        case .mexico: "◆"
+        case .brazil: "◈"
+        case .japan: "●"
+        case .canada: "✦"
+        case .morocco: "◇"
+        case .argentina: "☀"
+        case .france: "⚜"
+        case .germany: "■"
+        case .spain: "◎"
+        case .england: "✚"
+        case .portugal: "◒"
+        case .netherlands: "▲"
+        case .italy: "▰"
+        default: nation.shortCode.prefix(1).uppercased()
+        }
+    }
+
     private func ball() -> SKShapeNode {
         let node = SKShapeNode(circleOfRadius: ballRadius)
         node.name = "ball"
         node.fillColor = UIColor(hex: "#F8F5E8")
-        node.strokeColor = UIColor(hex: "#1B202B")
-        node.lineWidth = 2
+        node.strokeColor = UIColor(hex: "#101622")
+        node.lineWidth = 2.8
         node.physicsBody = SKPhysicsBody(circleOfRadius: ballRadius)
-        node.physicsBody?.mass = 0.38
+        node.physicsBody?.mass = 0.28
         node.physicsBody?.linearDamping = baseBallDamping
-        node.physicsBody?.angularDamping = 0.45
-        node.physicsBody?.restitution = 0.86
+        node.physicsBody?.angularDamping = 0.20
+        node.physicsBody?.restitution = min(1.70, 1.03 * CGFloat(configuration.rules.reboundMultiplier))
         node.physicsBody?.categoryBitMask = PhysicsCategory.ball
         node.physicsBody?.contactTestBitMask = PhysicsCategory.striker | PhysicsCategory.opponent | PhysicsCategory.wall | PhysicsCategory.goal | PhysicsCategory.arenaEffect | PhysicsCategory.shield
         node.physicsBody?.collisionBitMask = PhysicsCategory.striker | PhysicsCategory.opponent | PhysicsCategory.wall | PhysicsCategory.arenaEffect | PhysicsCategory.shield
         node.zPosition = 12
 
-        let seam = SKShapeNode(circleOfRadius: ballRadius * 0.48)
-        seam.strokeColor = UIColor(hex: "#1B202B").withAlphaComponent(0.45)
-        seam.lineWidth = 1.4
-        seam.zPosition = 13
+        let centerPatch = polygonNode(sides: 5, radius: ballRadius * 0.38)
+        centerPatch.fillColor = UIColor(hex: "#101622")
+        centerPatch.strokeColor = .clear
+        centerPatch.zPosition = 13
+        node.addChild(centerPatch)
+
+        for index in 0..<5 {
+            let angle = CGFloat(index) * (.pi * 2 / 5) - .pi / 2
+            let patch = polygonNode(sides: 5, radius: ballRadius * 0.20)
+            patch.position = CGPoint(x: cos(angle) * ballRadius * 0.66, y: sin(angle) * ballRadius * 0.66)
+            patch.fillColor = UIColor(hex: "#101622")
+            patch.strokeColor = .clear
+            patch.zRotation = angle
+            patch.zPosition = 13
+            node.addChild(patch)
+        }
+
+        let seam = SKShapeNode(circleOfRadius: ballRadius * 0.74)
+        seam.strokeColor = UIColor(hex: "#101622").withAlphaComponent(0.42)
+        seam.lineWidth = 1.2
+        seam.zPosition = 14
         node.addChild(seam)
         return node
     }
 
-    private func createCrowdBoard() {
-        let board = CrowdBoardNode(rect: crowdRect, seed: configuration.seed ^ 0xA11CE)
-        board.onReward = { [weak self] reward in
-            self?.applyCrowdReward(reward)
+    private func polygonNode(sides: Int, radius: CGFloat) -> SKShapeNode {
+        let path = CGMutablePath()
+        for index in 0..<sides {
+            let angle = CGFloat(index) * (.pi * 2 / CGFloat(sides)) - .pi / 2
+            let point = CGPoint(x: cos(angle) * radius, y: sin(angle) * radius)
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
         }
-        crowdBoard = board
-        addChild(board)
+        path.closeSubpath()
+        return SKShapeNode(path: path)
     }
 
     private func createRoarButtons() {
-        let buttonSize = CGSize(width: 62, height: 32)
-        let y = fieldRect.minY + 25
+        let buttonSize = CGSize(width: 66, height: 34)
+        let y = fieldRect.minY + 22
         let buttons: [(RoarLane, CGFloat, String)] = [
             (.left, fieldRect.minX + 48, "LEFT"),
             (.center, fieldRect.midX, "ROAR"),
@@ -512,46 +685,29 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     private func resetPositions() {
-        strikerNode.position = CGPoint(x: fieldRect.minX + fieldRect.width * 0.24, y: fieldRect.midY)
-        opponentNode.position = CGPoint(x: fieldRect.maxX - fieldRect.width * 0.20, y: fieldRect.midY)
+        strikerNode.position = CGPoint(x: fieldRect.midX, y: fieldRect.minY + fieldRect.height * 0.18)
+        opponentNode.position = CGPoint(x: fieldRect.midX, y: fieldRect.maxY - fieldRect.height * 0.18)
         ballNode.position = CGPoint(x: fieldRect.midX, y: fieldRect.midY)
         [strikerNode, opponentNode, ballNode].forEach { node in
             node.physicsBody?.velocity = .zero
             node.physicsBody?.angularVelocity = 0
         }
+        hidePowerBar()
         isResettingAfterGoal = false
         lastBallActiveTime = sceneTime
-    }
-
-    private func applyCrowdReward(_ reward: CrowdReward) {
-        roarController.addEnergy(reward.roarEnergy)
-        pendingPowerMultiplier = max(pendingPowerMultiplier, reward.powerShotMultiplier)
-        if reward.shieldDuration > 0 {
-            applyShield(duration: reward.shieldDuration)
-        }
-        if reward.curveBonus > 0 {
-            curveBonusUntil = sceneTime + 4
-        }
-        if reward.cleanBounceDuration > 0 {
-            cleanBounceUntil = sceneTime + reward.cleanBounceDuration
-            guideLineNode.strokeColor = UIColor(hex: "#F8F5E8")
-        }
-        comboController.addStyleScore(reward.styleScore)
-        addBurst(at: CGPoint(x: crowdRect.midX, y: crowdRect.maxY - 24), color: UIColor(hex: "#F2C14E"))
-        awardSkillEnergy(Double(reward.styleScore) / 8)
     }
 
     private func applyShield(duration: TimeInterval) {
         shieldUntil = max(shieldUntil, sceneTime + duration)
         shieldNode?.removeFromParent()
 
-        let shield = SKShapeNode(rectOf: CGSize(width: 14, height: min(132, fieldRect.height * 0.26)), cornerRadius: 6)
+        let shield = SKShapeNode(rectOf: CGSize(width: min(132, fieldRect.width * 0.38), height: 14), cornerRadius: 6)
         shield.name = "goalShield"
-        shield.position = CGPoint(x: fieldRect.minX + 38, y: fieldRect.midY)
+        shield.position = CGPoint(x: fieldRect.midX, y: fieldRect.minY + 44)
         shield.fillColor = UIColor(hex: "#2458E6").withAlphaComponent(0.42)
         shield.strokeColor = UIColor(hex: "#F8F5E8").withAlphaComponent(0.62)
         shield.lineWidth = 2
-        shield.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 14, height: min(132, fieldRect.height * 0.26)))
+        shield.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: min(132, fieldRect.width * 0.38), height: 14))
         shield.physicsBody?.isDynamic = false
         shield.physicsBody?.restitution = 1.08
         shield.physicsBody?.categoryBitMask = PhysicsCategory.shield
@@ -575,10 +731,15 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         let elapsed = currentTime - phaseStartTime
 
         if elapsed >= phaseDuration {
-            if !isOvertime && playerScore == opponentScore {
+            if playerScore == opponentScore && configuration.rules.allowsDraw {
+                endMatch()
+            } else if !isOvertime && playerScore == opponentScore {
                 isOvertime = true
                 self.phaseStartTime = currentTime
                 addBurst(at: ballNode.position, color: UIColor(hex: "#F2C14E"))
+            } else if isOvertime && playerScore == opponentScore && configuration.rules.requiresWinner {
+                self.phaseStartTime = currentTime
+                addBurst(at: ballNode.position, color: UIColor(hex: "#F0524F"))
             } else {
                 endMatch()
             }
@@ -596,15 +757,15 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
             let direction: CGVector
             switch wave.lane {
             case .left:
-                direction = CGVector(dx: 1, dy: wave.curve)
+                direction = CGVector(dx: 0.48 + wave.curve, dy: 1)
             case .center:
                 direction = CGVector(dx: ballNode.position.x - wave.origin.x, dy: ballNode.position.y - wave.origin.y + wave.curve * 120).normalized()
             case .right:
-                direction = CGVector(dx: -1, dy: -wave.curve)
+                direction = CGVector(dx: -0.48 - wave.curve, dy: 1)
             }
 
-            let multiplier: CGFloat = sceneTime < turboUntil ? 1.25 : 1
-            ballNode.physicsBody?.applyImpulse(direction.normalized() * (wave.force * 0.022 * multiplier))
+            let multiplier: CGFloat = sceneTime < turboUntil ? 1.42 : 1.18
+            ballNode.physicsBody?.applyImpulse(direction.normalized() * (wave.force * 0.040 * multiplier))
         }
 
         if sceneTime > cleanBounceUntil {
@@ -619,26 +780,31 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         let vector = CGVector(dx: target.x - opponentNode.position.x, dy: target.y - opponentNode.position.y)
         if vector.length > 4 {
             let defenseBias = opponentNation.aiProfile.defense
-            let force = CGFloat(19 + defenseBias * 16)
+            let force = CGFloat(16 + defenseBias * 13)
             opponentNode.physicsBody?.applyImpulse(vector.normalized() * force)
         }
 
         if target.distance(to: opponentNode.position) < 62 {
-            let shot = CGVector(dx: fieldRect.minX - target.x, dy: fieldRect.midY - target.y + generator.nextSignedUnit() * 58)
-            ballNode.physicsBody?.applyImpulse(shot.normalized() * CGFloat(12 + opponentNation.baseStats.power * 10))
+            let shot = CGVector(dx: fieldRect.midX - target.x + generator.nextSignedUnit() * 78, dy: fieldRect.minY - target.y)
+            ballNode.physicsBody?.applyImpulse(shot.normalized() * CGFloat(24 + opponentNation.baseStats.power * 15))
         }
 
-        nextOpponentKickTime = currentTime + 0.9 + Double(generator.nextUnit()) * 0.55
+        nextOpponentKickTime = currentTime + configuration.rules.opponentCadence + Double(generator.nextUnit()) * 0.55
     }
 
     private func updateBallSafety(currentTime: TimeInterval) {
         let velocity = ballNode.physicsBody?.velocity ?? .zero
-        if velocity.length > 18 {
+        if velocity.length > 42 {
             lastBallActiveTime = currentTime
         }
 
-        guard currentTime - lastBallActiveTime > 2.0, !isResettingAfterGoal else { return }
-        let nudge = CGVector(dx: generator.nextSignedUnit() * 22, dy: generator.nextSignedUnit() * 22)
+        let idleLimit: TimeInterval = 0.82
+        guard currentTime - lastBallActiveTime > idleLimit, !isResettingAfterGoal else { return }
+        let towardOpenPlay = CGPoint(x: fieldRect.midX, y: fieldRect.midY).distance(to: ballNode.position) > fieldRect.height * 0.35
+        let base = towardOpenPlay
+            ? CGVector(dx: fieldRect.midX - ballNode.position.x, dy: fieldRect.midY - ballNode.position.y).normalized()
+            : CGVector(dx: generator.nextSignedUnit(), dy: 0.85 + generator.nextUnit() * 0.45).normalized()
+        let nudge = base * CGFloat(72 + generator.nextUnit() * 54)
         ballNode.physicsBody?.applyImpulse(nudge)
         comboController.resetSoftly()
         lastBallActiveTime = currentTime
@@ -652,9 +818,10 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
         let origin = strikerNode.position
         let vector = touchMode == .aiming
-            ? CGVector(dx: origin.x - currentTouchLocation.x, dy: origin.y - currentTouchLocation.y)
+            ? aimVector(to: currentTouchLocation)
             : CGVector(dx: ballNode.position.x - origin.x, dy: ballNode.position.y - origin.y)
-        let length = min(sceneTime < cleanBounceUntil ? 220 : 130, max(20, vector.length * 1.2))
+        let aimingLength = 90 + currentShotPower * 95
+        let length = min(sceneTime < cleanBounceUntil ? 230 : aimingLength, max(24, vector.length * 1.12))
         let end = origin + vector.normalized() * length
         let path = CGMutablePath()
         path.move(to: origin)
@@ -663,8 +830,8 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     private func updateAimArrow(to touchLocation: CGPoint) {
-        let vector = CGVector(dx: strikerNode.position.x - touchLocation.x, dy: strikerNode.position.y - touchLocation.y)
-        let length = min(120, vector.length)
+        let vector = aimVector(to: touchLocation)
+        let length = min(170, max(54, 70 + currentShotPower * 100))
         let direction = vector.normalized()
         let end = strikerNode.position + direction * length
 
@@ -676,20 +843,27 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         path.move(to: end)
         path.addLine(to: end + direction.rotated(by: -2.55) * 15)
         aimArrowNode.path = path
+        updatePowerBar(power: currentShotPower)
         updateGuide()
     }
 
     private func launchStriker(from touchLocation: CGPoint) {
         guard canPlayerLaunch else { return }
-        let pull = CGVector(dx: strikerNode.position.x - touchLocation.x, dy: strikerNode.position.y - touchLocation.y)
-        let clampedLength = min(124, pull.length)
-        guard clampedLength > 12 else { return }
+        let direction = aimVector(to: touchLocation).normalized()
+        guard direction.length > 0 else { return }
 
         let statMultiplier = CGFloat(0.92 + playerNation.baseStats.power * 0.30)
         let turboMultiplier: CGFloat = sceneTime < turboUntil ? 1.32 : 1
-        let impulse = pull.normalized() * (clampedLength * 0.78 * statMultiplier * turboMultiplier)
+        let modeMultiplier = CGFloat(configuration.rules.launchPowerMultiplier)
+        let charge = max(0.28, currentShotPower)
+        let impulseMagnitude = (120 + charge * 190) * statMultiplier * turboMultiplier * modeMultiplier
+        let impulse = direction * impulseMagnitude
         strikerNode.physicsBody?.applyImpulse(impulse)
+        if ballNode.position.distance(to: strikerNode.position) < 170 {
+            ballNode.physicsBody?.applyImpulse(direction * (impulseMagnitude * 0.34))
+        }
         lastPlayerLaunchTime = sceneTime
+        audioService.play(.kick)
     }
 
     private func handleArenaEffectContact(_ effectNode: SKNode?) {
@@ -697,20 +871,29 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         comboController.registerHit(named: name)
 
         switch name {
-        case "postBumper":
-            let multiplier: CGFloat = sceneTime < cleanBounceUntil ? 1.10 : 1.18
+        case "postBumper", "goalPostBumper":
+            let multiplier: CGFloat = sceneTime < cleanBounceUntil ? 1.34 : 1.58
             applyBallVelocityMultiplier(multiplier, curve: 0)
             addBurst(at: ballNode.position, color: UIColor(hex: "#F2C14E"))
         case "adBoard":
             effectNode?.run(.sequence([.rotate(byAngle: 0.22, duration: 0.06), .rotate(byAngle: -0.22, duration: 0.10)]))
-            applyBallVelocityMultiplier(1.08, curve: 0.08)
+            applyBallVelocityMultiplier(1.28, curve: 0.12)
         case "cornerSpring":
-            applyBallVelocityMultiplier(1.26, curve: 0.12)
+            applyBallVelocityMultiplier(1.55, curve: 0.16)
             addBurst(at: ballNode.position, color: UIColor(hex: "#17B978"))
+        case "refereeBlocker", "lineJudgeBlocker":
+            applyBallVelocityMultiplier(1.36, curve: 0.13)
+            effectNode?.run(.sequence([.scale(to: 1.10, duration: 0.05), .scale(to: 1.0, duration: 0.10)]))
+        case "keeperBlocker":
+            applyBallVelocityMultiplier(1.44, curve: -0.12)
+            addBurst(at: ballNode.position, color: UIColor(hex: "#24A0ED"))
+        case "flagBlocker", "miniPost":
+            applyBallVelocityMultiplier(1.50, curve: 0.20)
+            addBurst(at: ballNode.position, color: UIColor(hex: "#F0524F"))
         case "temporaryBumper":
-            applyBallVelocityMultiplier(1.28, curve: 0.20)
+            applyBallVelocityMultiplier(1.56, curve: 0.24)
         default:
-            applyBallVelocityMultiplier(1.04, curve: 0)
+            applyBallVelocityMultiplier(1.22, curve: 0.05)
         }
     }
 
@@ -718,15 +901,17 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
         guard let goalName else { return }
         isResettingAfterGoal = true
 
-        let playerScored = goalName == "rightGoal"
+        let playerScored = goalName == "topGoal"
         if playerScored {
             playerScore += 1
             awardSkillEnergy(24)
             roarController.addEnergy(18)
+            audioService.play(.goal)
         } else {
             opponentScore += 1
             awardSkillEnergy(30)
             roarController.addEnergy(24)
+            audioService.play(.boo)
         }
 
         let finishedCombo = comboController.registerGoal(playerScored: playerScored)
@@ -842,13 +1027,14 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
             combo: combo.current,
             maxCombo: combo.max,
             isOvertime: isOvertime,
-            phaseName: isOvertime ? "Golden Goal" : configuration.mode.displayName
+            phaseName: isOvertime ? "Golden Goal" : (configuration.cupContext?.hudTitle ?? configuration.mode.displayName),
+            phaseDetail: isOvertime ? "Next goal wins" : (configuration.cupContext?.hudDetail ?? configuration.rules.phaseLabel ?? configuration.mode.shortRule)
         ))
     }
 
     private func makeHeadline(maxCombo: Int, styleScore: Int) -> String {
         if maxCombo >= 8 { return "\(maxCombo)-hit post riot. Totally intended." }
-        if playerScore > opponentScore && styleScore > 120 { return "The crowd pushed that one in." }
+        if playerScore > opponentScore && styleScore > 120 { return "Lucky rails did exactly what you asked." }
         if playerScore > opponentScore { return playerNation.replayPhrases.randomElement() ?? "The posts did the paperwork." }
         if playerScore == opponentScore { return "No winner, plenty of noise." }
         return "One more bounce and it was history."
@@ -856,6 +1042,63 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
 
     private func awardSkillEnergy(_ amount: Double) {
         skillEnergy = min(100, skillEnergy + max(0, amount))
+    }
+
+    private func playContactSound() {
+        guard sceneTime - lastContactSoundTime > 0.08 else { return }
+        lastContactSoundTime = sceneTime
+        audioService.play(.bounce)
+    }
+
+    private var currentShotPower: CGFloat {
+        guard touchMode == .aiming, let aimChargeStartTime else { return 0 }
+        return min(1, max(0, CGFloat((sceneTime - aimChargeStartTime) / 0.82)))
+    }
+
+    private func aimVector(to point: CGPoint) -> CGVector {
+        let vector = CGVector(dx: point.x - strikerNode.position.x, dy: point.y - strikerNode.position.y)
+        if vector.length >= 14 {
+            return vector
+        }
+        return CGVector(dx: ballNode.position.x - strikerNode.position.x, dy: ballNode.position.y - strikerNode.position.y)
+    }
+
+    private func updateAimCharge() {
+        guard touchMode == .aiming else { return }
+        updateAimArrow(to: currentTouchLocation)
+    }
+
+    private func updatePowerBar(power: CGFloat) {
+        let width: CGFloat = 92
+        let height: CGFloat = 9
+        let fillWidth = max(3, width * min(1, max(0, power)))
+        let yOffset: CGFloat = strikerNode.position.y > fieldRect.midY ? -42 : 42
+        let center = clamp(strikerNode.position + CGVector(dx: 0, dy: yOffset), inset: 34)
+
+        powerBarBackNode.position = center
+        powerBarFillNode.position = center
+        powerBarBackNode.path = CGPath(
+            roundedRect: CGRect(x: -width / 2, y: -height / 2, width: width, height: height),
+            cornerWidth: height / 2,
+            cornerHeight: height / 2,
+            transform: nil
+        )
+        powerBarFillNode.path = CGPath(
+            roundedRect: CGRect(x: -width / 2, y: -height / 2, width: fillWidth, height: height),
+            cornerWidth: height / 2,
+            cornerHeight: height / 2,
+            transform: nil
+        )
+        powerBarBackNode.isHidden = false
+        powerBarFillNode.isHidden = false
+    }
+
+    private func hidePowerBar() {
+        aimChargeStartTime = nil
+        powerBarBackNode.isHidden = true
+        powerBarFillNode.isHidden = true
+        powerBarBackNode.path = nil
+        powerBarFillNode.path = nil
     }
 
     private func applyBallVelocityMultiplier(_ multiplier: CGFloat, curve: CGFloat) {
@@ -885,13 +1128,14 @@ final class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
     private var baseBallDamping: CGFloat {
-        configuration.arenaID == .iceRink ? 0.25 : 0.35
+        let arenaDamping: CGFloat = configuration.arenaID == .iceRink ? 0.10 : 0.16
+        return arenaDamping
     }
 
     private func coinsEarned(maxCombo: Int, styleScore: Int) -> Int {
         var coins = 18 + min(60, maxCombo * 4) + min(50, styleScore / 18)
         if playerScore > opponentScore { coins += 28 }
-        if configuration.mode == .dailyClash { coins += 18 }
+        if configuration.mode == .globalCup { coins += 18 }
         return coins
     }
 
@@ -962,4 +1206,3 @@ extension UIColor {
         }
     }
 }
-

@@ -34,11 +34,11 @@
 		97DD2376B642C2BA5F29F9DB /* Color+KickNations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48BC18E8F297F676E865ABA6 /* Color+KickNations.swift */; };
 		9E4F6B7B9CA9F62A3F411827 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AE870ABD16A84E51447AB0 /* PersistenceService.swift */; };
 		AF6852C8652060203D51856C /* AdService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0803052D432133FC6969096 /* AdService.swift */; };
-		B5825B3F81FF54722B800EEF /* CrowdBoardNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75BD652ADAD83254DC24011 /* CrowdBoardNode.swift */; };
-		B65B62CBB2E6C79D3B6637D5 /* DailyChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF331BFB8DA06F5AB17F20E8 /* DailyChallenge.swift */; };
 		BD19585D5C2E622090870732 /* ReplayRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68009E1127C8E5C7F08ED63F /* ReplayRecorder.swift */; };
 		C356AA261CA1CEC355C03D71 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD77BD849F63C02126E4421 /* GameScene.swift */; };
 		C80AA43425996DA54A8375A3 /* NationSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 632AE572A228357E1F715E21 /* NationSelectView.swift */; };
+		D84781F3B4D138692A0437D6 /* GlobalCup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3993A280A1F9ADAA50DE7 /* GlobalCup.swift */; };
+		E0E5E731AB6AC9CFBFEFB04F /* ProceduralAudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 929DFF8E640423CEAB0E07F8 /* ProceduralAudioService.swift */; };
 		E4FA17CCE18D7D32A62B4D06 /* SeededRandomGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86A9AB16C5FEFE47C4724467 /* SeededRandomGenerator.swift */; };
 		E9EDC4E36C295615BC1D9963 /* Nation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 018F2BED0E446497C9B8852C /* Nation.swift */; };
 		FA3DE24345CB2F492EC670D7 /* PhysicsCategories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 702BF93CBFA05A44930E5124 /* PhysicsCategories.swift */; };
@@ -77,6 +77,7 @@
 		702BF93CBFA05A44930E5124 /* PhysicsCategories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsCategories.swift; sourceTree = "<group>"; };
 		7BC52B523001E4ABFD4DCEAF /* StoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreView.swift; sourceTree = "<group>"; };
 		86A9AB16C5FEFE47C4724467 /* SeededRandomGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeededRandomGenerator.swift; sourceTree = "<group>"; };
+		929DFF8E640423CEAB0E07F8 /* ProceduralAudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProceduralAudioService.swift; sourceTree = "<group>"; };
 		9340D83A319E30A280BE48E6 /* PurchaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseService.swift; sourceTree = "<group>"; };
 		9BD77BD849F63C02126E4421 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		A0699AC3073B355B3D5CB1AE /* ResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsView.swift; sourceTree = "<group>"; };
@@ -84,14 +85,13 @@
 		ADE3AE3AABCC960A4E66049C /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		BF4B314B90700A19C1AE5A86 /* ShareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareService.swift; sourceTree = "<group>"; };
 		BFF79D4EAAF9F6FD284269C8 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
-		C75BD652ADAD83254DC24011 /* CrowdBoardNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrowdBoardNode.swift; sourceTree = "<group>"; };
 		DD7D9ED7E809FD3B356D22B4 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
 		E8CD07A7EFED54E6F0581381 /* GameplayLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameplayLogicTests.swift; sourceTree = "<group>"; };
 		EF2239EF1EF2423A6B4902C2 /* AIController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIController.swift; sourceTree = "<group>"; };
-		EF331BFB8DA06F5AB17F20E8 /* DailyChallenge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyChallenge.swift; sourceTree = "<group>"; };
 		F0803052D432133FC6969096 /* AdService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdService.swift; sourceTree = "<group>"; };
 		F0AE870ABD16A84E51447AB0 /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
 		F1C01CB38B8C6C6197C523CA /* GameCenterService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterService.swift; sourceTree = "<group>"; };
+		F9B3993A280A1F9ADAA50DE7 /* GlobalCup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalCup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -134,6 +134,7 @@
 				F1C01CB38B8C6C6197C523CA /* GameCenterService.swift */,
 				1BA8B1431BCD0B97B50A4EE6 /* HapticsService.swift */,
 				F0AE870ABD16A84E51447AB0 /* PersistenceService.swift */,
+				929DFF8E640423CEAB0E07F8 /* ProceduralAudioService.swift */,
 				9340D83A319E30A280BE48E6 /* PurchaseService.swift */,
 				BF4B314B90700A19C1AE5A86 /* ShareService.swift */,
 			);
@@ -146,7 +147,6 @@
 				EF2239EF1EF2423A6B4902C2 /* AIController.swift */,
 				07E8CD4C3244BF8CDFB43628 /* ArenaController.swift */,
 				54FB87B6D2CD8973E8D81025 /* ComboController.swift */,
-				C75BD652ADAD83254DC24011 /* CrowdBoardNode.swift */,
 				9BD77BD849F63C02126E4421 /* GameScene.swift */,
 				019511977D95EE44C63E1593 /* MatchViewModel.swift */,
 				702BF93CBFA05A44930E5124 /* PhysicsCategories.swift */,
@@ -193,7 +193,7 @@
 			isa = PBXGroup;
 			children = (
 				5E4810C0CA25832D7A894471 /* Arena.swift */,
-				EF331BFB8DA06F5AB17F20E8 /* DailyChallenge.swift */,
+				F9B3993A280A1F9ADAA50DE7 /* GlobalCup.swift */,
 				3C88492D68FA4941F0AF2096 /* MatchRules.swift */,
 				018F2BED0E446497C9B8852C /* Nation.swift */,
 				43AE3F5CB729685E9AC927C9 /* PlayerProgress.swift */,
@@ -290,11 +290,10 @@
 				0134A26824889F2D7D557117 /* ArenaController.swift in Sources */,
 				97DD2376B642C2BA5F29F9DB /* Color+KickNations.swift in Sources */,
 				142F9C57DCA1A5FC783AD327 /* ComboController.swift in Sources */,
-				B5825B3F81FF54722B800EEF /* CrowdBoardNode.swift in Sources */,
-				B65B62CBB2E6C79D3B6637D5 /* DailyChallenge.swift in Sources */,
 				2050BCAC8C61220084B6F8A4 /* GameCenterService.swift in Sources */,
 				C356AA261CA1CEC355C03D71 /* GameScene.swift in Sources */,
 				17175B8A43A79CB2A7B1BE91 /* GameView.swift in Sources */,
+				D84781F3B4D138692A0437D6 /* GlobalCup.swift in Sources */,
 				80AD80850AEF6309703D3A96 /* HapticsService.swift in Sources */,
 				0DA67195FD933EA7514DD5AF /* HomeView.swift in Sources */,
 				326259446C237C24253CF648 /* KickNationsApp.swift in Sources */,
@@ -306,6 +305,7 @@
 				FA3DE24345CB2F492EC670D7 /* PhysicsCategories.swift in Sources */,
 				2AA9994413989F2063694997 /* PinballArenaController.swift in Sources */,
 				072584AF7863EE6AC78B3E71 /* PlayerProgress.swift in Sources */,
+				E0E5E731AB6AC9CFBFEFB04F /* ProceduralAudioService.swift in Sources */,
 				763BDC49619D3C62E1661399 /* PurchaseService.swift in Sources */,
 				BD19585D5C2E622090870732 /* ReplayRecorder.swift in Sources */,
 				0E9995249FB007E739E6A9CD /* ResultsView.swift in Sources */,
@@ -382,7 +382,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -400,7 +400,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MARKETING_VERSION = 0.2;
+				MARKETING_VERSION = 0.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -469,7 +469,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -481,7 +481,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MARKETING_VERSION = 0.2;
+				MARKETING_VERSION = 0.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";

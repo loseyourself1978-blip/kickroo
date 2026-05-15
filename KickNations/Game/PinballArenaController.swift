@@ -3,12 +3,11 @@ import UIKit
 
 struct PinballArenaController {
     let arenaID: ArenaID
+    let rules: MatchRules
+    let seed: UInt64
 
     func build(in scene: SKScene, fieldRect: CGRect) {
-        buildPostBumpers(in: scene, fieldRect: fieldRect)
-        buildAdBoards(in: scene, fieldRect: fieldRect)
-        buildCornerSprings(in: scene, fieldRect: fieldRect)
-        buildMagnetZones(in: scene, fieldRect: fieldRect)
+        buildRandomBlockers(in: scene, fieldRect: fieldRect)
         buildArenaAccent(in: scene, fieldRect: fieldRect)
     }
 
@@ -101,6 +100,235 @@ struct PinballArenaController {
         }
     }
 
+    private func buildRandomBlockers(in scene: SKScene, fieldRect: CGRect) {
+        var generator = SeededRandomGenerator(seed: seed ^ 0xB10CCADE)
+        var kinds = [
+            "refereeBlocker",
+            "lineJudgeBlocker",
+            "keeperBlocker",
+            "flagBlocker",
+            "miniPost",
+            "adBoard",
+            "whistleHex",
+            "cameraDiamond",
+            "coneBlocker",
+            "springChevron",
+            "scoreboardBar",
+            "luckyStar"
+        ]
+
+        if kinds.count > 1 {
+            for index in stride(from: kinds.count - 1, through: 1, by: -1) {
+                let swapIndex = Int(generator.next() % UInt64(index + 1))
+                kinds.swapAt(index, swapIndex)
+            }
+        }
+
+        for index in 0..<min(rules.blockerCount, kinds.count) {
+            let kind = kinds[index]
+            let blocker = randomBlocker(kind: kind, index: index)
+            let xInset: CGFloat = 48
+            let yInset: CGFloat = 92
+            var position = CGPoint(
+                x: fieldRect.minX + xInset + generator.nextUnit() * max(1, fieldRect.width - xInset * 2),
+                y: fieldRect.minY + yInset + generator.nextUnit() * max(1, fieldRect.height - yInset * 2)
+            )
+
+            if position.distance(to: CGPoint(x: fieldRect.midX, y: fieldRect.midY)) < 72 {
+                position.y = position.y < fieldRect.midY ? fieldRect.midY - 88 : fieldRect.midY + 88
+            }
+
+            if position.y < fieldRect.minY + fieldRect.height * 0.27 {
+                position.y += fieldRect.height * 0.12
+            }
+
+            blocker.position = position
+            blocker.zRotation = generator.nextSignedUnit() * 0.45
+            configure(blocker: blocker)
+            scene.addChild(blocker)
+
+            if index < rules.movingBlockerCount {
+                let dx = generator.nextSignedUnit() * 30
+                let dy = generator.nextSignedUnit() * 38
+                let duration = 1.4 + Double(generator.nextUnit()) * 1.2
+                blocker.run(.repeatForever(.sequence([
+                    .moveBy(x: dx, y: dy, duration: duration),
+                    .moveBy(x: -dx, y: -dy, duration: duration)
+                ])))
+            }
+        }
+    }
+
+    private func randomBlocker(kind: String, index: Int) -> SKShapeNode {
+        let node: SKShapeNode
+
+        switch kind {
+        case "refereeBlocker":
+            node = SKShapeNode(circleOfRadius: 13)
+            node.fillColor = UIColor(hex: "#1B202B")
+            node.strokeColor = UIColor(hex: "#F2C14E")
+            addLabel("REF", to: node, color: .white)
+        case "lineJudgeBlocker":
+            node = SKShapeNode(rectOf: CGSize(width: 12, height: 44), cornerRadius: 5)
+            node.fillColor = UIColor(hex: "#F0524F")
+            node.strokeColor = UIColor(hex: "#F8F5E8")
+        case "keeperBlocker":
+            node = SKShapeNode(rectOf: CGSize(width: 36, height: 15), cornerRadius: 7)
+            node.fillColor = UIColor(hex: "#24A0ED")
+            node.strokeColor = UIColor.white.withAlphaComponent(0.80)
+            addLabel("GK", to: node, color: UIColor(hex: "#111722"))
+        case "flagBlocker":
+            let path = CGMutablePath()
+            path.move(to: CGPoint(x: -10, y: -15))
+            path.addLine(to: CGPoint(x: -10, y: 17))
+            path.addLine(to: CGPoint(x: 15, y: 6))
+            path.addLine(to: CGPoint(x: -10, y: -15))
+            node = SKShapeNode(path: path)
+            node.fillColor = UIColor(hex: "#17B978")
+            node.strokeColor = UIColor(hex: "#F2C14E")
+        case "miniPost":
+            node = SKShapeNode(circleOfRadius: 11)
+            node.fillColor = UIColor(hex: "#F8F5E8")
+            node.strokeColor = UIColor(hex: "#F0524F")
+        case "adBoard":
+            node = SKShapeNode(rectOf: CGSize(width: 44, height: 11), cornerRadius: 5)
+            node.fillColor = index.isMultiple(of: 2) ? UIColor(hex: "#6C4AB6") : UIColor(hex: "#E4572E")
+            node.strokeColor = UIColor.white.withAlphaComponent(0.70)
+            addLabel("CUP", to: node, color: .white)
+        case "whistleHex":
+            node = SKShapeNode(path: regularPolygon(sides: 6, radius: 16))
+            node.fillColor = UIColor(hex: "#F2C14E")
+            node.strokeColor = UIColor(hex: "#101622")
+            addLabel("!", to: node, color: UIColor(hex: "#101622"))
+        case "cameraDiamond":
+            node = SKShapeNode(path: diamond(width: 34, height: 26))
+            node.fillColor = UIColor(hex: "#24A0ED")
+            node.strokeColor = UIColor.white.withAlphaComponent(0.78)
+            addLabel("CAM", to: node, color: .white)
+        case "coneBlocker":
+            node = SKShapeNode(path: trapezoid(top: 18, bottom: 34, height: 30))
+            node.fillColor = UIColor(hex: "#F0524F")
+            node.strokeColor = UIColor(hex: "#FFF4D6")
+        case "springChevron":
+            node = SKShapeNode(path: chevron(width: 42, height: 28))
+            node.fillColor = UIColor(hex: "#17B978")
+            node.strokeColor = UIColor(hex: "#F2C14E")
+        case "scoreboardBar":
+            node = SKShapeNode(rectOf: CGSize(width: 52, height: 18), cornerRadius: 3)
+            node.fillColor = UIColor(hex: "#101622")
+            node.strokeColor = UIColor(hex: "#9DE7FF")
+            addLabel("VAR", to: node, color: UIColor(hex: "#9DE7FF"))
+        default:
+            node = SKShapeNode(path: starPath(points: 5, outerRadius: 18, innerRadius: 8))
+            node.fillColor = UIColor(hex: "#F2C14E")
+            node.strokeColor = UIColor(hex: "#F0524F")
+        }
+
+        node.name = kind
+        node.lineWidth = 2.4
+        node.zPosition = 4
+        return node
+    }
+
+    private func configure(blocker: SKShapeNode) {
+        let body: SKPhysicsBody
+        switch blocker.name {
+        case "refereeBlocker", "miniPost":
+            body = SKPhysicsBody(circleOfRadius: blocker.name == "refereeBlocker" ? 13 : 11)
+        case "lineJudgeBlocker":
+            body = SKPhysicsBody(rectangleOf: CGSize(width: 12, height: 44))
+        case "keeperBlocker":
+            body = SKPhysicsBody(rectangleOf: CGSize(width: 36, height: 15))
+        case "flagBlocker", "whistleHex", "cameraDiamond", "coneBlocker", "springChevron", "luckyStar":
+            body = SKPhysicsBody(rectangleOf: CGSize(width: 26, height: 32))
+        case "scoreboardBar":
+            body = SKPhysicsBody(rectangleOf: CGSize(width: 52, height: 18))
+        default:
+            body = SKPhysicsBody(rectangleOf: CGSize(width: 44, height: 11))
+        }
+
+        body.isDynamic = false
+        body.restitution = min(1.82, 1.22 * CGFloat(rules.reboundMultiplier))
+        body.categoryBitMask = PhysicsCategory.arenaEffect
+        body.contactTestBitMask = PhysicsCategory.ball
+        body.collisionBitMask = PhysicsCategory.ball | PhysicsCategory.striker | PhysicsCategory.opponent
+        blocker.physicsBody = body
+    }
+
+    private func addLabel(_ text: String, to node: SKShapeNode, color: UIColor) {
+        let label = SKLabelNode(text: text)
+        label.fontName = "AvenirNext-Heavy"
+        label.fontSize = 7
+        label.fontColor = color
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        label.zPosition = 5
+        node.addChild(label)
+    }
+
+    private func regularPolygon(sides: Int, radius: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        for index in 0..<sides {
+            let angle = CGFloat(index) * (.pi * 2 / CGFloat(sides)) - .pi / 2
+            let point = CGPoint(x: cos(angle) * radius, y: sin(angle) * radius)
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
+        path.closeSubpath()
+        return path
+    }
+
+    private func diamond(width: CGFloat, height: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: 0, y: height / 2))
+        path.addLine(to: CGPoint(x: width / 2, y: 0))
+        path.addLine(to: CGPoint(x: 0, y: -height / 2))
+        path.addLine(to: CGPoint(x: -width / 2, y: 0))
+        path.closeSubpath()
+        return path
+    }
+
+    private func trapezoid(top: CGFloat, bottom: CGFloat, height: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: -bottom / 2, y: -height / 2))
+        path.addLine(to: CGPoint(x: bottom / 2, y: -height / 2))
+        path.addLine(to: CGPoint(x: top / 2, y: height / 2))
+        path.addLine(to: CGPoint(x: -top / 2, y: height / 2))
+        path.closeSubpath()
+        return path
+    }
+
+    private func chevron(width: CGFloat, height: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: -width / 2, y: -height / 2))
+        path.addLine(to: CGPoint(x: 0, y: -height * 0.10))
+        path.addLine(to: CGPoint(x: width / 2, y: -height / 2))
+        path.addLine(to: CGPoint(x: width * 0.18, y: height / 2))
+        path.addLine(to: CGPoint(x: 0, y: height * 0.16))
+        path.addLine(to: CGPoint(x: -width * 0.18, y: height / 2))
+        path.closeSubpath()
+        return path
+    }
+
+    private func starPath(points: Int, outerRadius: CGFloat, innerRadius: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        for index in 0..<(points * 2) {
+            let radius = index.isMultiple(of: 2) ? outerRadius : innerRadius
+            let angle = CGFloat(index) * (.pi / CGFloat(points)) - .pi / 2
+            let point = CGPoint(x: cos(angle) * radius, y: sin(angle) * radius)
+            if index == 0 {
+                path.move(to: point)
+            } else {
+                path.addLine(to: point)
+            }
+        }
+        path.closeSubpath()
+        return path
+    }
+
     private func buildMagnetZones(in scene: SKScene, fieldRect: CGRect) {
         for x in [fieldRect.minX + 48, fieldRect.maxX - 48] {
             let zone = SKShapeNode(ellipseOf: CGSize(width: 74, height: 168))
@@ -166,4 +394,3 @@ struct PinballArenaController {
         scene.addChild(grid)
     }
 }
-

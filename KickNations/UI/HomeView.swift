@@ -10,7 +10,7 @@ struct HomeView: View {
 
             VStack(spacing: 16) {
                 header
-                modeStack
+                cupEntry
                 progressStrip
                 Spacer(minLength: 0)
                 footer
@@ -28,7 +28,7 @@ struct HomeView: View {
                     Text("Kick Nations")
                         .font(.system(size: 42, weight: .black, design: .rounded))
                         .foregroundStyle(Color.knInk)
-                    Text("Arcade Soccer Pinball")
+                    Text("2026 World Cup Season")
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(Color.knGold)
                 }
@@ -44,22 +44,64 @@ struct HomeView: View {
                 .tint(.white.opacity(0.22))
             }
 
-            HeroPinballPanel()
+            HeroCupPanel()
                 .frame(height: 190)
         }
     }
 
-    private var modeStack: some View {
-        VStack(spacing: 10) {
-            ModeRow(title: "Quick Match", subtitle: "45s bounce battle", symbolName: "bolt.fill", tint: Color.knGold) {
-                router.chooseNation(for: .quickKick)
+    private var cupEntry: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                Image(systemName: "globe.americas.fill")
+                    .font(.title2.weight(.black))
+                    .foregroundStyle(.black)
+                    .frame(width: 48, height: 48)
+                    .background(Color.knGold, in: RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("World Cup Season")
+                        .font(.title2.weight(.black))
+                        .foregroundStyle(.white)
+                    Text("48 teams, 12 groups, one trophy run")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.white.opacity(0.58))
+                }
+
+                Spacer()
+                NationToken(nation: NationLibrary.nation(for: persistence.progress.selectedNationID), size: 46)
             }
-            ModeRow(title: "Daily Rally", subtitle: "Fixed seed challenge", symbolName: "calendar", tint: Color.knMint) {
-                router.startMatch(mode: .dailyClash, nationID: persistence.progress.selectedNationID)
+
+            HStack(spacing: 10) {
+                Button {
+                    router.startCupPractice(nationID: persistence.progress.selectedNationID)
+                } label: {
+                    Label("Practice First", systemImage: "target")
+                        .font(.headline.weight(.black))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                }
+                .buttonStyle(.bordered)
+                .tint(Color.knMint)
+                .foregroundStyle(.black)
+
+                Button {
+                    router.chooseNation(for: .globalCup)
+                } label: {
+                    Label("Start Cup", systemImage: "play.fill")
+                        .font(.headline.weight(.black))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color.knGold)
+                .foregroundStyle(.black)
             }
-            ModeRow(title: "Pinball Rush", subtitle: "First to three goals", symbolName: "circle.grid.cross.fill", tint: Color.knBlue) {
-                router.chooseNation(for: .partyMode)
-            }
+        }
+        .padding(14)
+        .background(Color.knPanel, in: RoundedRectangle(cornerRadius: 8))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.knGold.opacity(0.20), lineWidth: 1)
         }
     }
 
@@ -71,7 +113,7 @@ struct HomeView: View {
     }
 
     private var footer: some View {
-        Text("Original arcade football game. No official tournament affiliation.")
+        Text("Unofficial arcade football cup game built for the 2026 World Cup season.")
             .font(.caption2.weight(.semibold))
             .foregroundStyle(.white.opacity(0.48))
             .multilineTextAlignment(.center)
@@ -180,9 +222,7 @@ struct NationToken: View {
     }
 }
 
-private struct HeroPinballPanel: View {
-    private let fanColors: [Color] = [.knRed, .knBlue, .knGold, .knMint, .white]
-
+private struct HeroCupPanel: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
@@ -192,25 +232,13 @@ private struct HeroPinballPanel: View {
                 .stroke(.white.opacity(0.24), lineWidth: 2)
                 .padding(12)
 
-            ForEach(0..<4) { index in
-                Circle()
-                    .fill(index.isMultiple(of: 2) ? Color.knGold : .white)
-                    .overlay(Circle().stroke(Color.knRed.opacity(0.85), lineWidth: 3))
-                    .frame(width: 30, height: 30)
-                    .position(x: index < 2 ? 34 : 320, y: index.isMultiple(of: 2) ? 65 : 126)
-            }
+            HeroGoalFrame(isTop: true)
+                .frame(width: 170, height: 54)
+                .position(x: 174, y: 30)
 
-            HStack(spacing: 7) {
-                ForEach(0..<18) { index in
-                    Circle()
-                        .fill(fanColors[index % fanColors.count])
-                        .frame(width: 9, height: 9)
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 9)
-            .background(.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 8))
-            .position(x: 174, y: 164)
+            HeroGoalFrame(isTop: false)
+                .frame(width: 170, height: 54)
+                .position(x: 174, y: 160)
 
             HStack(spacing: -8) {
                 ForEach(NationLibrary.all.prefix(4)) { nation in
@@ -222,7 +250,18 @@ private struct HeroPinballPanel: View {
             Image(systemName: "soccerball")
                 .font(.system(size: 34, weight: .black))
                 .foregroundStyle(.white)
-                .position(x: 230, y: 96)
+                .position(x: 226, y: 96)
+
+            VStack(spacing: 2) {
+                Circle()
+                    .fill(Color(hex: NationLibrary.nation(for: .usa).palette.primaryHex))
+                    .overlay(Circle().stroke(.white.opacity(0.65), lineWidth: 2))
+                    .frame(width: 34, height: 34)
+                Text("YOU")
+                    .font(.system(size: 8, weight: .black, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.8))
+            }
+            .position(x: 174, y: 140)
         }
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay {
@@ -232,14 +271,45 @@ private struct HeroPinballPanel: View {
     }
 }
 
+private struct HeroGoalFrame: View {
+    let isTop: Bool
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .stroke(.white.opacity(0.18), lineWidth: 1)
+                .background(Color.white.opacity(0.035))
+            HStack {
+                Capsule()
+                    .fill(Color.knGold)
+                    .overlay(Capsule().stroke(.white.opacity(0.75), lineWidth: 1))
+                    .frame(width: 8)
+                Spacer()
+                Capsule()
+                    .fill(Color.knGold)
+                    .overlay(Capsule().stroke(.white.opacity(0.75), lineWidth: 1))
+                    .frame(width: 8)
+            }
+            VStack {
+                if !isTop { Spacer() }
+                Capsule()
+                    .fill(Color.knGold)
+                    .overlay(Capsule().stroke(.white.opacity(0.75), lineWidth: 1))
+                    .frame(height: 8)
+                if isTop { Spacer() }
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+}
+
 private struct FieldLines: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         path.addRect(rect.insetBy(dx: 10, dy: 10))
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY + 10))
-        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - 10))
+        path.move(to: CGPoint(x: rect.minX + 10, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.maxX - 10, y: rect.midY))
         path.addEllipse(in: CGRect(x: rect.midX - 24, y: rect.midY - 24, width: 48, height: 48))
         return path
     }
 }
-

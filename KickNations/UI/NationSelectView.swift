@@ -73,11 +73,7 @@ struct NationSelectView: View {
             .padding(20)
         }
         .onAppear {
-            if mode == .dailyClash {
-                selectedNationID = DailyChallenge.today().playerNationID
-            } else {
-                selectedNationID = persistence.progress.selectedNationID
-            }
+            selectedNationID = persistence.progress.selectedNationID
         }
     }
 
@@ -86,7 +82,7 @@ struct NationSelectView: View {
     }
 
     private var startTitle: String {
-        mode == .roastReplay ? "Simulate" : "Start"
+        "Start Cup"
     }
 
     private var selectedSummary: some View {
@@ -94,10 +90,10 @@ struct NationSelectView: View {
             NationToken(nation: selectedNation, size: 54)
 
             VStack(alignment: .leading, spacing: 5) {
-        Text(selectedNation.homeArena.displayName)
+                Text(mode == .globalCup ? "Global Cup 48" : selectedNation.homeArena.displayName)
                     .font(.headline.weight(.bold))
                     .foregroundStyle(.white)
-                Text(selectedNation.skill.shortEffect)
+                Text(mode == .globalCup ? "48 teams, 12 groups, knockout bracket" : selectedNation.skill.shortEffect)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color.knGold)
             }
