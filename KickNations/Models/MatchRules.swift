@@ -66,30 +66,37 @@ struct MatchRules: Codable, Equatable {
     }
 
     static func globalCup(arenaID: ArenaID, context: GlobalCupContext) -> MatchRules {
-        .standard(
+        let step: Int = context.difficultyStep
+        let blockerCount: Int = min(14, 7 + step)
+        let movingBlockerCount: Int = min(blockerCount - 2, 2 + step)
+        let reboundMultiplier: Double = 1.28 + Double(step) * 0.035
+        let launchPowerMultiplier: Double = 2.02 + Double(step) * 0.075
+        let opponentCadence: TimeInterval = max(0.58, 1.12 - Double(step) * 0.065)
+
+        return MatchRules.standard(
             arenaID: arenaID,
             duration: GameMode.globalCup.duration,
             allowsDraw: !context.stage.isKnockout,
             requiresWinner: context.stage.isKnockout,
-            blockerCount: context.stage.isKnockout ? 12 : 10,
-            movingBlockerCount: context.stage.isKnockout ? 7 : 5,
-            reboundMultiplier: context.stage.isKnockout ? 1.50 : 1.42,
-            launchPowerMultiplier: context.stage.isKnockout ? 2.65 : 2.45,
-            opponentCadence: context.stage.isKnockout ? 0.78 : 0.84,
+            blockerCount: blockerCount,
+            movingBlockerCount: movingBlockerCount,
+            reboundMultiplier: reboundMultiplier,
+            launchPowerMultiplier: launchPowerMultiplier,
+            opponentCadence: opponentCadence,
             phaseLabel: context.stage.displayName
         )
     }
 
     static func cupPractice(arenaID: ArenaID) -> MatchRules {
-        .standard(
+        return MatchRules.standard(
             arenaID: arenaID,
             duration: 60,
             allowsDraw: true,
-            blockerCount: 8,
-            movingBlockerCount: 3,
-            reboundMultiplier: 1.38,
-            launchPowerMultiplier: 2.35,
-            opponentCadence: 1.05,
+            blockerCount: 6,
+            movingBlockerCount: 2,
+            reboundMultiplier: 1.24,
+            launchPowerMultiplier: 1.95,
+            opponentCadence: 1.18,
             phaseLabel: "Practice First Match"
         )
     }

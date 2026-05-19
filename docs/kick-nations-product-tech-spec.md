@@ -1,7 +1,7 @@
 # Kick Nations Product & Technical Spec
 
-Version: 0.3  
-Date: 2026-05-15  
+Version: 0.3.1  
+Date: 2026-05-16  
 Market: North America Apple App Store  
 Target launch-ready date: 2026-05-28  
 World tournament opening date: 2026-06-11  
@@ -19,7 +19,7 @@ Players attack upward through a pinball football pitch, use lucky rebounds and r
 
 ## 2. MVP Scope
 
-Included in v0.3:
+Included in v0.3.1:
 
 - iPhone-only portrait gameplay.
 - SwiftUI shell with SpriteKit game scene.
@@ -33,6 +33,11 @@ Included in v0.3:
 - Goal frame with net, highlighted rebound posts, and open goal trigger.
 - Distinct random blockers with varied silhouettes.
 - Strong launch power, high rebound, lucky deflections, and anti-stuck nudges.
+- Ball containment rules: the ball must remain visible in the pitch, score through the goal mouth, or rebound back into play.
+- Continuous player control during live play: dragging steers the player while the ball is moving, then release applies a readable kick.
+- In-match exit button in the upper-left corner, returning to the previous operation page.
+- Progressive official-cup difficulty: more blockers, more moving blockers, stronger rebound, and faster opponent pressure as the cup advances.
+- More varied cartoon avatar headwear and kit motifs, including cowboy hat, sombrero, winter beanie, headband, wrap, curls, caps, stripes, and checks.
 - Original procedural audio for crowd, kick, bounce, goal, roar, and boo.
 - Local progression and coins for completed official matches.
 
@@ -59,10 +64,11 @@ Recommended physics:
 |---|---:|
 | Cup match duration | 50s |
 | Practice duration | 60s |
-| Launch power multiplier | 2.35-2.65 |
-| Rebound multiplier | 1.38-1.50 |
-| Anti-stuck timeout | ~0.82s |
-| Ball damping | 0.10-0.16 |
+| Launch power multiplier | 1.95 practice, 2.02-2.55 official progression |
+| Rebound multiplier | 1.24 practice, 1.28-1.53 official progression |
+| Anti-stuck timeout | ~0.95s |
+| Ball damping | 0.14-0.24 |
+| Ball visible speed cap | ~380-520 pt/s |
 | Post restitution | very high |
 
 ## 4. Cup Rules
@@ -73,6 +79,7 @@ Recommended physics:
 - Group matches can draw.
 - Knockout stages require a winner.
 - Knockout path: Round of 32, Round of 16, Quarter Final, Semi Final, Final.
+- Difficulty step increases from group match 1 through the final.
 
 ## 5. Technical Modules
 
@@ -82,7 +89,7 @@ Recommended physics:
 | Cup model | `KickNations/Models/GlobalCup.swift` | Groups, standings, rankings, stage advancement |
 | Match rules | `KickNations/Models/MatchRules.swift` | Cup-only mode, practice rules, official match rules |
 | Nation data | `KickNations/Models/Nation.swift` | 48 teams, stats, colors, symbols |
-| Gameplay scene | `KickNations/Game/GameScene.swift` | SpriteKit physics, upward attack, goals, avatars, football, anti-stuck |
+| Gameplay scene | `KickNations/Game/GameScene.swift` | SpriteKit physics, upward attack, goals, avatars, football, ball containment, continuous control, anti-stuck |
 | Arena blockers | `KickNations/Game/PinballArenaController.swift` | Distinct random blockers and movement |
 | Roar waves | `KickNations/Game/RoarController.swift` | Energy, heat, wave origins, force |
 | Audio | `KickNations/Services/ProceduralAudioService.swift` | Original generated sound effects |
@@ -106,3 +113,4 @@ Required checks:
 - Screenshots show no blank or stale UI.
 - Home exposes only Global Cup 48 related flow.
 - Game view shows upward attack, animated tutorial, recognizable football, cartoon characters, frame-and-net goals, varied blockers, and no bottom color grid.
+- App icon renders from an RGB, exact-size asset catalog and should appear on the iOS home screen after reinstall.

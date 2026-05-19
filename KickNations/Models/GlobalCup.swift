@@ -62,6 +62,25 @@ struct GlobalCupContext: Codable, Equatable {
         }
         return stage.isKnockout ? "Win or go home" : standingSummary
     }
+
+    var difficultyStep: Int {
+        switch stage {
+        case .groupStage:
+            return max(0, min(2, matchNumber - 1))
+        case .roundOf32:
+            return 3
+        case .roundOf16:
+            return 4
+        case .quarterFinal:
+            return 5
+        case .semiFinal:
+            return 6
+        case .final:
+            return 7
+        case .champion, .eliminated:
+            return 7
+        }
+    }
 }
 
 struct CupStanding: Codable, Equatable, Identifiable {

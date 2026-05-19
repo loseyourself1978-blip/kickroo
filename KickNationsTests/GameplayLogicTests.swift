@@ -57,15 +57,21 @@ final class GameplayLogicTests: XCTestCase {
         XCTAssertEqual(GameMode.allCases, [.globalCup])
     }
 
-    func testCupRulesAreFastAndBouncy() {
-        let cupContext = GlobalCupContext(stage: .roundOf32, groupID: nil, matchNumber: 1, standingSummary: "")
-        let cup = MatchRules.globalCup(arenaID: .turboField, context: cupContext)
+    func testCupRulesEscalateFromPracticeToFinal() {
+        let openerContext = GlobalCupContext(stage: .groupStage, groupID: "A", matchNumber: 1, standingSummary: "")
+        let finalContext = GlobalCupContext(stage: .final, groupID: nil, matchNumber: 1, standingSummary: "")
+        let opener = MatchRules.globalCup(arenaID: .turboField, context: openerContext)
+        let final = MatchRules.globalCup(arenaID: .turboField, context: finalContext)
         let practice = MatchRules.cupPractice(arenaID: .turboField)
 
-        XCTAssertTrue(cup.requiresWinner)
-        XCTAssertGreaterThan(cup.launchPowerMultiplier, 2.5)
-        XCTAssertGreaterThan(cup.reboundMultiplier, 1.45)
+        XCTAssertFalse(opener.requiresWinner)
+        XCTAssertTrue(final.requiresWinner)
         XCTAssertTrue(practice.allowsDraw)
+        XCTAssertLessThan(practice.blockerCount, opener.blockerCount)
+        XCTAssertLessThan(opener.blockerCount, final.blockerCount)
+        XCTAssertLessThan(opener.movingBlockerCount, final.movingBlockerCount)
+        XCTAssertLessThan(final.opponentCadence, opener.opponentCadence)
+        XCTAssertGreaterThan(final.launchPowerMultiplier, opener.launchPowerMultiplier)
     }
 
     func testGlobalCupCampaignAdvancesFromGroupToKnockout() {

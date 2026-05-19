@@ -114,7 +114,11 @@ struct PinballArenaController {
             "coneBlocker",
             "springChevron",
             "scoreboardBar",
-            "luckyStar"
+            "luckyStar",
+            "fanDrum",
+            "bootBlocker",
+            "confettiRing",
+            "captainShield"
         ]
 
         if kinds.count > 1 {
@@ -218,6 +222,24 @@ struct PinballArenaController {
             node.fillColor = UIColor(hex: "#101622")
             node.strokeColor = UIColor(hex: "#9DE7FF")
             addLabel("VAR", to: node, color: UIColor(hex: "#9DE7FF"))
+        case "fanDrum":
+            node = SKShapeNode(circleOfRadius: 15)
+            node.fillColor = UIColor(hex: "#E4572E")
+            node.strokeColor = UIColor(hex: "#F8F5E8")
+            addLabel("DRM", to: node, color: .white)
+        case "bootBlocker":
+            node = SKShapeNode(path: bootPath(width: 38, height: 24))
+            node.fillColor = UIColor(hex: "#29335C")
+            node.strokeColor = UIColor(hex: "#F2C14E")
+        case "confettiRing":
+            node = SKShapeNode(circleOfRadius: 16)
+            node.fillColor = UIColor(hex: "#17B978").withAlphaComponent(0.18)
+            node.strokeColor = UIColor(hex: "#F0524F")
+        case "captainShield":
+            node = SKShapeNode(path: shieldPath(width: 34, height: 38))
+            node.fillColor = UIColor(hex: "#6C4AB6")
+            node.strokeColor = UIColor(hex: "#F8F5E8")
+            addLabel("C", to: node, color: UIColor(hex: "#F8F5E8"))
         default:
             node = SKShapeNode(path: starPath(points: 5, outerRadius: 18, innerRadius: 8))
             node.fillColor = UIColor(hex: "#F2C14E")
@@ -233,13 +255,21 @@ struct PinballArenaController {
     private func configure(blocker: SKShapeNode) {
         let body: SKPhysicsBody
         switch blocker.name {
-        case "refereeBlocker", "miniPost":
-            body = SKPhysicsBody(circleOfRadius: blocker.name == "refereeBlocker" ? 13 : 11)
+        case "refereeBlocker", "miniPost", "fanDrum", "confettiRing":
+            let radius: CGFloat
+            if blocker.name == "refereeBlocker" {
+                radius = 13
+            } else if blocker.name == "miniPost" {
+                radius = 11
+            } else {
+                radius = 15
+            }
+            body = SKPhysicsBody(circleOfRadius: radius)
         case "lineJudgeBlocker":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 12, height: 44))
         case "keeperBlocker":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 36, height: 15))
-        case "flagBlocker", "whistleHex", "cameraDiamond", "coneBlocker", "springChevron", "luckyStar":
+        case "flagBlocker", "whistleHex", "cameraDiamond", "coneBlocker", "springChevron", "luckyStar", "bootBlocker", "captainShield":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 26, height: 32))
         case "scoreboardBar":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 52, height: 18))
@@ -309,6 +339,32 @@ struct PinballArenaController {
         path.addLine(to: CGPoint(x: width * 0.18, y: height / 2))
         path.addLine(to: CGPoint(x: 0, y: height * 0.16))
         path.addLine(to: CGPoint(x: -width * 0.18, y: height / 2))
+        path.closeSubpath()
+        return path
+    }
+
+    private func bootPath(width: CGFloat, height: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: -width / 2, y: -height * 0.22))
+        path.addLine(to: CGPoint(x: -width * 0.12, y: -height * 0.22))
+        path.addLine(to: CGPoint(x: width * 0.02, y: height * 0.30))
+        path.addLine(to: CGPoint(x: width * 0.24, y: height * 0.30))
+        path.addLine(to: CGPoint(x: width * 0.24, y: -height * 0.08))
+        path.addLine(to: CGPoint(x: width / 2, y: -height * 0.08))
+        path.addLine(to: CGPoint(x: width / 2, y: -height * 0.32))
+        path.addLine(to: CGPoint(x: -width / 2, y: -height * 0.32))
+        path.closeSubpath()
+        return path
+    }
+
+    private func shieldPath(width: CGFloat, height: CGFloat) -> CGPath {
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: 0, y: height / 2))
+        path.addLine(to: CGPoint(x: width / 2, y: height * 0.20))
+        path.addLine(to: CGPoint(x: width * 0.34, y: -height * 0.34))
+        path.addLine(to: CGPoint(x: 0, y: -height / 2))
+        path.addLine(to: CGPoint(x: -width * 0.34, y: -height * 0.34))
+        path.addLine(to: CGPoint(x: -width / 2, y: height * 0.20))
         path.closeSubpath()
         return path
     }

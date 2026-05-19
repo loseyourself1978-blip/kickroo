@@ -13,14 +13,17 @@ final class AppRouter: ObservableObject {
     @Published var screen: Screen = .home
     @Published var selectedNationID: NationID = .usa
     @Published var cupCampaign: GlobalCupCampaign?
+    private var previousScreenBeforeGame: Screen = .home
 
     init() {
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("-smokePractice") || arguments.contains("-smokeQuickKick") {
+            previousScreenBeforeGame = .home
             screen = .game(makePracticeConfiguration(nationID: selectedNationID))
         } else if arguments.contains("-smokeCup") || arguments.contains("-smokeGlobalCup") || arguments.contains("-smokePinballRush") {
             cupCampaign = GlobalCupCampaign.start(playerNationID: selectedNationID, seed: 0x20260514)
             if let configuration = cupCampaign?.currentConfiguration() {
+                previousScreenBeforeGame = .home
                 screen = .game(configuration)
             }
         }
@@ -42,13 +45,13 @@ final class AppRouter: ObservableObject {
         selectedNationID = nationID
         cupCampaign = GlobalCupCampaign.start(playerNationID: nationID)
         if let configuration = cupCampaign?.currentConfiguration() {
-            screen = .game(configuration)
+            showGame(configuration)
         }
     }
 
     func startCupPractice(nationID: NationID) {
         selectedNationID = nationID
-        screen = .game(makePracticeConfiguration(nationID: nationID))
+        showGame(makePracticeConfiguration(nationID: nationID))
     }
 
     func showResults(_ result: MatchResult) {
@@ -70,7 +73,11 @@ final class AppRouter: ObservableObject {
             showHome()
             return
         }
-        screen = .game(configuration)
+        showGame(configuration)
+    }
+
+    func exitCurrentMatch() {
+        screen = previousScreenBeforeGame
     }
 
     private func makePracticeConfiguration(nationID: NationID) -> MatchConfiguration {
@@ -96,5 +103,10 @@ final class AppRouter: ObservableObject {
 
     private func randomOpponent(excluding nationID: NationID) -> NationID {
         NationID.allCases.filter { $0 != nationID }.randomElement() ?? .mexico
+    }
+
+    private func showGame(_ configuration: MatchConfiguration) {
+        previousScreenBeforeGame = screen
+        screen = .game(configuration)
     }
 }

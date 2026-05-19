@@ -45,6 +45,17 @@ struct GameView: View {
 
     private var topHUD: some View {
         HStack(spacing: 12) {
+            Button {
+                router.exitCurrentMatch()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.headline.weight(.black))
+                    .frame(width: 38, height: 38)
+            }
+            .buttonStyle(.bordered)
+            .tint(.white.opacity(0.22))
+            .foregroundStyle(.white)
+
             ScoreBadge(
                 nation: NationLibrary.nation(for: viewModel.configuration.playerNationID),
                 score: viewModel.snapshot.playerScore

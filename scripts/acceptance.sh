@@ -26,6 +26,16 @@ run_step() {
   log "PASS $name"
 }
 
+capture_screenshot() {
+  local device_id="$1"
+  local output_path="$2"
+  local tmp_path
+  tmp_path="/private/tmp/kick-nations-$(basename "$output_path")"
+  rm -f "$tmp_path"
+  xcrun simctl io "$device_id" screenshot "$tmp_path"
+  cp "$tmp_path" "$output_path"
+}
+
 select_device() {
   xcrun simctl list devices available | awk -F '[()]' '/iPhone/ && /Booted|Shutdown/ { print $2; exit }'
 }
@@ -107,23 +117,23 @@ APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/Kick Nations.app"
 run_step "install app" xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 run_step "launch home" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -disableAudio
 sleep 3
-run_step "screenshot home" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/home.png"
+run_step "screenshot home" capture_screenshot "$DEVICE_ID" "$SCREENSHOT_DIR/home.png"
 
 xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
 run_step "launch first tutorial" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokePractice -showTutorial -disableAudio
 sleep 3
-run_step "screenshot tutorial" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/tutorial.png"
+run_step "screenshot tutorial" capture_screenshot "$DEVICE_ID" "$SCREENSHOT_DIR/tutorial.png"
 
 xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
 run_step "launch practice match" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokePractice -skipTutorial -disableAudio
 sleep 4
 screenshot_practice="$SCREENSHOT_DIR/practice.png"
-run_step "screenshot practice" xcrun simctl io "$DEVICE_ID" screenshot "$screenshot_practice"
+run_step "screenshot practice" capture_screenshot "$DEVICE_ID" "$screenshot_practice"
 
 xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
 run_step "launch official cup" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokeCup -skipTutorial -disableAudio
 sleep 4
-run_step "screenshot cup" xcrun simctl io "$DEVICE_ID" screenshot "$SCREENSHOT_DIR/cup.png"
+run_step "screenshot cup" capture_screenshot "$DEVICE_ID" "$SCREENSHOT_DIR/cup.png"
 
 status_color="#17B978"
 write_report "PASSED"
