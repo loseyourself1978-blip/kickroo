@@ -1,4 +1,4 @@
-# Kick Nations 变更日志
+# Kickroo! 变更日志
 
 ## v0.2-draft / 2026-05-13
 
@@ -47,7 +47,7 @@
 
 已知限制：
 
-- GitHub 远端 `loseyourself1978-blip/KickNations` 尚未创建或推送，因为当前机器未安装 GitHub CLI `gh`，需要后续联网安装/登录授权。
+- GitHub 远端 `loseyourself1978-blip/kickroo` 尚未创建或推送，因为当前机器未安装 GitHub CLI `gh`，需要后续联网安装/登录授权。
 
 ## GitHub 上传阻塞 / 2026-05-14
 
@@ -55,7 +55,7 @@
 
 说明：
 
-- 已联网检查 `https://github.com/loseyourself1978-blip/KickNations.git`，返回 `Repository not found`。
+- 已联网检查 `https://github.com/loseyourself1978-blip/kickroo.git`，返回 `Repository not found`。
 - 已尝试通过 GitHub 连接器安装/授权创建仓库，但用户反馈 MFA 验证失败。
 - 当前不会绕过认证，也不会上传到其他仓库。
 - 本地代码、文档、测试、验收报告已完成；GitHub 创建仓库和推送需要 MFA 成功后继续。
@@ -111,3 +111,78 @@
 - 角色外观增加差异：牛仔帽、墨西哥草帽、冬帽、发带、头巾、卷发、帽檐、条纹和格纹球衣等，不再只有近似秃头造型。
 - 障碍物集合增加鼓、球鞋、彩带环、队长盾等形状，继续保留裁判和边裁作为可改变足球轨迹的元素。
 - 更新单元测试，覆盖练习赛、杯赛开局和决赛难度递进。
+
+## v0.4 / 2026-05-20
+
+状态：按 Apple Store 分发前试玩反馈进行操作和赛场结构更新，等待完整验收。
+
+代码版本：
+
+- `MARKETING_VERSION`: 0.4
+- `CURRENT_PROJECT_VERSION`: 5
+
+主要变更：
+
+- 操作方式从按压蓄力改为滑动：玩家从任意己方球员开始滑动，滑动方向决定球员冲刺方向，滑动速度决定冲击力度。
+- 场上从单人对抗改为多人阵容：练习赛/小组赛 3v3，淘汰赛 5v5，决赛 6v6，玩家可选择任意己方球员碰撞足球。
+- 移除中场随机道具生成；保留场边角旗、边裁标识和门框作为反弹元素。
+- 新增高可读性的动态裁判和边裁角色，裁判、边裁、球员服饰和轮廓明显区分。
+- 进球反馈增强：玩家进球显示 3 秒 `GOAL!` 与比分高亮，并播放进球声和欢呼；对方进球显示比分高亮并播放嘘声。
+- 教学文案更新为滑动操作，不再提示按住蓄力。
+- 产品规格、SOP 和版本映射升级到 v0.4 / build 5。
+
+## v0.4.1 / 2026-05-21
+
+状态：按试玩截图反馈修复公平性、反馈表现和 App Icon，构建与单元测试通过。
+
+代码版本：
+
+- `MARKETING_VERSION`: 0.4.1
+- `CURRENT_PROJECT_VERSION`: 6
+
+主要变更：
+
+- 退出按钮从游戏区域/记分牌内移到安全区左上角顶端，位于球场左上角旗上方，并改为醒目的金色圆形返回按钮。
+- 任意己方球员或对手碰到足球后都会按反作用力弹开，并进入短暂触球冷却；同一球员需要再次滑动才能继续主动撞球。
+- 对手 AI 改为开球/重开球先保持阵型，再由单名最近球员压迫足球，其余球员守位并互相分离，降低围球和底线扎堆。
+- 进球反馈改为转播风格：无论哪方进球都显示金色大写 `GOAL!`，深色比分条高亮双方比分，播放解说式 `Goal!`；玩家进球叠加欢呼，对方进球叠加嘘声。
+- 进球后重新开球会播放裁判鸣哨声。
+- 重做 App Icon 生成脚本和全套图标：新版包含卡通射门球员、金色滑动轨迹、标准足球、射门动线和球门。
+- 更新产品技术文档、SOP、版本映射、App Store 元数据和素材清单。
+
+验证：
+
+- `swift scripts/generate_app_icon.swift` 通过并生成 9 个 App Icon PNG。
+- `xcodebuild -project KickNations.xcodeproj -scheme KickNations -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build` 通过。
+- `xcodebuild -project KickNations.xcodeproj -scheme KickNations -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test` 通过，7 个测试全部通过。
+- 模拟器实机截图已刷新，`reports/latest/screenshots/v0.4.1-cup-final.png` 确认金色 `GOAL!`、比分高亮和左上角安全区返回按钮可见。
+- App Store 前两张截图已刷新，4 张 iPhone 6.5-inch 截图均校验为 `1242 x 2688`。
+- 页面资源检查通过：`index.html`、`support.html`、`privacy.html`、`assets/hero-gameplay.png` 本地 HTTP HEAD 均返回 200，hero 图与首张 App Store 截图 hash 一致。
+
+## v0.4.2 / 2026-05-25
+
+状态：按品牌与上架准备反馈，将产品名切换为 Kickroo!，准备推送 GitHub。
+
+代码版本：
+
+- `MARKETING_VERSION`: 0.4.2
+- `CURRENT_PROJECT_VERSION`: 7
+
+主要变更：
+
+- 面向用户的 App 名称、首页、分享文案、官网、Support、Privacy、App Store 元数据和上架清单统一改为 `Kickroo!`。
+- Bundle ID 改为 `com.loseyourself1978.kickroo`，测试 Bundle ID 改为 `com.loseyourself1978.kickroo.tests`。
+- `PRODUCT_NAME` 改为 `Kickroo`，`CFBundleDisplayName` 保持 `Kickroo!`，避免可执行文件路径带感叹号。
+- 使用根目录 `icon.png` 作为新版 App Icon 源图，生成 20/29/40/60/1024 全套 RGB PNG。
+- App Store subtitle、promotional text、keywords、description 和 What’s New 改为更轻、更北美休闲手游化的 Kickroo! 文案。
+- Support/Privacy 页邮箱从 placeholder 改为 `loseyourself1978@gmail.com`。
+- GitHub 目标仓库改为 `loseyourself1978-blip/kickroo`。
+
+验证：
+
+- `swift scripts/generate_app_icon.swift` 通过并生成 9 个 Kickroo! App Icon PNG。
+- App Icon 尺寸校验通过，1024 图为 RGB。
+- `xcodebuild -project KickNations.xcodeproj -scheme KickNations -destination 'platform=iOS Simulator,name=iPhone 17 Pro' test` 通过，7 个测试全部通过。
+- 模拟器安装/启动 `com.loseyourself1978.kickroo` 通过，首页截图 `reports/latest/screenshots/v0.4.2-kickroo-home-clean2.png` 已确认显示 `Kickroo!`。
+- App Store 第 4 张首页截图已刷新为 Kickroo! 版本，4 张 iPhone 6.5-inch 截图均校验为 `1242 x 2688`。
+- 2026-05-25 页面资源复查通过：`index.html`、`support.html`、`privacy.html`、`assets/hero-gameplay.png` 本地 HTTP HEAD 均返回 200。
