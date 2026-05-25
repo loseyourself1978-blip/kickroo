@@ -12,10 +12,10 @@ struct StoreProduct: Identifiable, Equatable {
 
 @MainActor
 final class PurchaseService: ObservableObject {
-    static let removeAdsID = "com.kicknations.removeads"
-    static let starterPackID = "com.kicknations.starternationpack"
-    static let replayStudioID = "com.kicknations.replaystudio"
-    static let tournamentBundleID = "com.kicknations.tournamentbundle"
+    static let removeAdsID = "com.loseyourself1978.kickroo.removeads"
+    static let starterPackID = "com.loseyourself1978.kickroo.starterpack"
+    static let replayStudioID = "com.loseyourself1978.kickroo.replaystudio"
+    static let tournamentBundleID = "com.loseyourself1978.kickroo.tournamentbundle"
 
     @Published private(set) var products: [StoreProduct] = [
         StoreProduct(id: removeAdsID, displayName: "Remove Ads", summary: "Interstitials off, rewarded ads optional", price: "$4.99", symbolName: "nosign"),
@@ -30,4 +30,3 @@ final class PurchaseService: ObservableObject {
         _ = try? await Product.products(for: products.map(\.id))
     }
 }
-

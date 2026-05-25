@@ -7,8 +7,45 @@ struct PinballArenaController {
     let seed: UInt64
 
     func build(in scene: SKScene, fieldRect: CGRect) {
-        buildRandomBlockers(in: scene, fieldRect: fieldRect)
+        buildSidelineProps(in: scene, fieldRect: fieldRect)
         buildArenaAccent(in: scene, fieldRect: fieldRect)
+    }
+
+    private func buildSidelineProps(in scene: SKScene, fieldRect: CGRect) {
+        buildCornerFlags(in: scene, fieldRect: fieldRect)
+        buildLineJudgeRails(in: scene, fieldRect: fieldRect)
+    }
+
+    private func buildCornerFlags(in scene: SKScene, fieldRect: CGRect) {
+        let positions = [
+            CGPoint(x: fieldRect.minX + 24, y: fieldRect.minY + 24),
+            CGPoint(x: fieldRect.maxX - 24, y: fieldRect.minY + 24),
+            CGPoint(x: fieldRect.minX + 24, y: fieldRect.maxY - 24),
+            CGPoint(x: fieldRect.maxX - 24, y: fieldRect.maxY - 24)
+        ]
+
+        for position in positions {
+            let flag = randomBlocker(kind: "flagBlocker", index: 0)
+            flag.name = "cornerFlag"
+            flag.position = position
+            flag.zRotation = position.x < fieldRect.midX ? -0.20 : 0.20
+            configure(blocker: flag)
+            scene.addChild(flag)
+        }
+    }
+
+    private func buildLineJudgeRails(in scene: SKScene, fieldRect: CGRect) {
+        let yValues = [fieldRect.minY + fieldRect.height * 0.32, fieldRect.minY + fieldRect.height * 0.68]
+        for y in yValues {
+            for x in [fieldRect.minX + 16, fieldRect.maxX - 16] {
+                let marker = randomBlocker(kind: "lineJudgeBlocker", index: 0)
+                marker.name = "sidelineFlag"
+                marker.position = CGPoint(x: x, y: y)
+                marker.zRotation = x < fieldRect.midX ? -0.18 : 0.18
+                configure(blocker: marker)
+                scene.addChild(marker)
+            }
+        }
     }
 
     private func buildPostBumpers(in scene: SKScene, fieldRect: CGRect) {
@@ -265,11 +302,11 @@ struct PinballArenaController {
                 radius = 15
             }
             body = SKPhysicsBody(circleOfRadius: radius)
-        case "lineJudgeBlocker":
+        case "lineJudgeBlocker", "sidelineFlag":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 12, height: 44))
         case "keeperBlocker":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 36, height: 15))
-        case "flagBlocker", "whistleHex", "cameraDiamond", "coneBlocker", "springChevron", "luckyStar", "bootBlocker", "captainShield":
+        case "flagBlocker", "cornerFlag", "whistleHex", "cameraDiamond", "coneBlocker", "springChevron", "luckyStar", "bootBlocker", "captainShield":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 26, height: 32))
         case "scoreboardBar":
             body = SKPhysicsBody(rectangleOf: CGSize(width: 52, height: 18))

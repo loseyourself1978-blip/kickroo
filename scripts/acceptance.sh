@@ -9,7 +9,7 @@ SCREENSHOT_DIR="$REPORT_DIR/screenshots"
 DERIVED_DATA="$ROOT_DIR/DerivedData"
 LOG_FILE="$REPORT_DIR/acceptance.log"
 SCHEME="KickNations"
-BUNDLE_ID="com.kicknations.soccerclash"
+BUNDLE_ID="com.loseyourself1978.kickroo"
 
 mkdir -p "$SCREENSHOT_DIR"
 : > "$LOG_FILE"
@@ -30,7 +30,7 @@ capture_screenshot() {
   local device_id="$1"
   local output_path="$2"
   local tmp_path
-  tmp_path="/private/tmp/kick-nations-$(basename "$output_path")"
+  tmp_path="/private/tmp/kickroo-$(basename "$output_path")"
   rm -f "$tmp_path"
   xcrun simctl io "$device_id" screenshot "$tmp_path"
   cp "$tmp_path" "$output_path"
@@ -50,7 +50,7 @@ write_report() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kick Nations Acceptance Report</title>
+  <title>Kickroo! Acceptance Report</title>
   <style>
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #10131A; color: #F7F8FA; }
     main { max-width: 1120px; margin: 0 auto; padding: 24px; }
@@ -64,7 +64,7 @@ write_report() {
 </head>
 <body>
   <main>
-    <h1>Kick Nations Acceptance Report</h1>
+    <h1>Kickroo! Acceptance Report</h1>
     <p>Generated: ${generated_at}</p>
     <p><span class="status">${status}</span></p>
     <div class="grid">
@@ -98,7 +98,7 @@ HTML
 status_color="#F2C14E"
 trap 'status_color="#F0524F"; write_report "FAILED"; log "FAILED acceptance"; exit 1' ERR
 
-log "Kick Nations acceptance started"
+log "Kickroo! acceptance started"
 DEVICE_ID="$(select_device)"
 if [[ -z "$DEVICE_ID" ]]; then
   log "No available iPhone simulator found"
@@ -113,7 +113,7 @@ run_step "generate project" xcodegen generate
 run_step "unit tests" xcodebuild -project KickNations.xcodeproj -scheme "$SCHEME" -destination "platform=iOS Simulator,id=$DEVICE_ID" -derivedDataPath "$DERIVED_DATA" test
 run_step "debug build" xcodebuild -project KickNations.xcodeproj -scheme "$SCHEME" -destination "platform=iOS Simulator,id=$DEVICE_ID" -derivedDataPath "$DERIVED_DATA" build
 
-APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/Kick Nations.app"
+APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/Kickroo.app"
 run_step "install app" xcrun simctl install "$DEVICE_ID" "$APP_PATH"
 run_step "launch home" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -disableAudio
 sleep 3
@@ -137,4 +137,4 @@ run_step "screenshot cup" capture_screenshot "$DEVICE_ID" "$SCREENSHOT_DIR/cup.p
 
 status_color="#17B978"
 write_report "PASSED"
-log "Kick Nations acceptance passed"
+log "Kickroo! acceptance passed"

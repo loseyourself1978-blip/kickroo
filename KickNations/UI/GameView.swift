@@ -14,7 +14,7 @@ struct GameView: View {
     }
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             SpriteView(scene: viewModel.scene, options: [.ignoresSiblingOrder])
                 .ignoresSafeArea()
 
@@ -24,8 +24,12 @@ struct GameView: View {
                 skillDock
             }
             .padding(.horizontal, 16)
-            .padding(.top, 16)
+            .padding(.top, 58)
             .padding(.bottom, 18)
+
+            exitButton
+                .padding(.leading, 14)
+                .padding(.top, -26)
 
             if showTutorial {
                 FirstMatchTutorialOverlay {
@@ -45,17 +49,6 @@ struct GameView: View {
 
     private var topHUD: some View {
         HStack(spacing: 12) {
-            Button {
-                router.exitCurrentMatch()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.headline.weight(.black))
-                    .frame(width: 38, height: 38)
-            }
-            .buttonStyle(.bordered)
-            .tint(.white.opacity(0.22))
-            .foregroundStyle(.white)
-
             ScoreBadge(
                 nation: NationLibrary.nation(for: viewModel.configuration.playerNationID),
                 score: viewModel.snapshot.playerScore
@@ -88,6 +81,25 @@ struct GameView: View {
                 score: viewModel.snapshot.opponentScore
             )
         }
+    }
+
+    private var exitButton: some View {
+        Button {
+            router.exitCurrentMatch()
+        } label: {
+            Image(systemName: "chevron.left")
+                .font(.system(size: 23, weight: .black))
+            .foregroundStyle(.black)
+            .frame(width: 40, height: 40)
+            .background(Color.knGold, in: Circle())
+            .overlay {
+                Circle()
+                    .stroke(.white.opacity(0.86), lineWidth: 2)
+            }
+            .shadow(color: .black.opacity(0.34), radius: 10, x: 0, y: 5)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Exit match")
     }
 
     private var skillDock: some View {
@@ -197,8 +209,9 @@ private struct FirstMatchTutorialOverlay: View {
 
                 VStack(spacing: 8) {
                     TutorialStep(symbolName: "arrow.up.circle.fill", title: "Attack upward", detail: "Your player starts at the bottom and shoots toward the top net.")
-                    TutorialStep(symbolName: "gauge.with.dots.needle.67percent", title: "Hold for power", detail: "Press on the field, aim the arrow, then release at full charge.")
-                    TutorialStep(symbolName: "soccerball", title: "Hunt lucky rebounds", detail: "Posts, springs, and blockers can send one sharp shot all the way in.")
+                    TutorialStep(symbolName: "hand.draw.fill", title: "Swipe any player", detail: "Start on a teammate and flick in the direction you want them to crash.")
+                    TutorialStep(symbolName: "bolt.fill", title: "Fast swipe, hard hit", detail: "Quick swipes move harder, so one clean flick can change the whole play.")
+                    TutorialStep(symbolName: "soccerball", title: "Use the chaos", detail: "Players, officials, flags, and goal frames can all redirect the ball.")
                     TutorialStep(symbolName: "speaker.wave.3.fill", title: "Use roar waves", detail: "Tap Left, Roar, or Right to push the ball upward and bend it late.")
                 }
 
@@ -230,7 +243,7 @@ private struct TutorialAnimationView: View {
                 let size = proxy.size
                 let phase = (timeline.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 2.7)) / 2.7
                 let ballPoint = ballPoint(in: size, progress: phase)
-                let charge = min(1, max(0, phase / 0.28))
+                let swipe = min(1, max(0, phase / 0.30))
 
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
@@ -278,17 +291,17 @@ private struct TutorialAnimationView: View {
                         .position(x: size.width * 0.50, y: size.height * 0.82)
 
                     VStack(spacing: 4) {
-                        Image(systemName: "arrow.up")
+                        Image(systemName: "arrow.up.right")
                             .font(.system(size: 24, weight: .black))
                             .foregroundStyle(Color.knGold)
-                            .scaleEffect(1 + charge * 0.30)
+                            .scaleEffect(1 + swipe * 0.30)
                         Capsule()
                             .fill(Color.knGold.opacity(0.25))
                             .frame(width: 46, height: 6)
                             .overlay(alignment: .leading) {
                                 Capsule()
                                     .fill(Color.knGold)
-                                    .frame(width: 8 + 38 * charge, height: 6)
+                                    .frame(width: 8 + 38 * swipe, height: 6)
                             }
                     }
                     .opacity(phase < 0.34 ? 1 : 0.25)

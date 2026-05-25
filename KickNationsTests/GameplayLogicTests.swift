@@ -1,6 +1,6 @@
 import CoreGraphics
 import XCTest
-@testable import Kick_Nations
+@testable import Kickroo
 
 final class GameplayLogicTests: XCTestCase {
     func testRoarControllerSpendsEnergyAndTracksHeat() {

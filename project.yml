@@ -4,8 +4,8 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    MARKETING_VERSION: 0.3.1
-    CURRENT_PROJECT_VERSION: 4
+    MARKETING_VERSION: 0.4.2
+    CURRENT_PROJECT_VERSION: 7
     SWIFT_VERSION: 5.0
 targets:
   KickNations:
@@ -16,13 +16,13 @@ targets:
       - path: KickNations
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.kicknations.soccerclash
-        PRODUCT_NAME: Kick Nations
+        PRODUCT_BUNDLE_IDENTIFIER: com.loseyourself1978.kickroo
+        PRODUCT_NAME: Kickroo
         TARGETED_DEVICE_FAMILY: 1
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Kick Nations
+        INFOPLIST_KEY_CFBundleDisplayName: Kickroo!
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIRequiresFullScreen: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
@@ -36,9 +36,9 @@ targets:
       - target: KickNations
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.kicknations.soccerclash.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.loseyourself1978.kickroo.tests
         GENERATE_INFOPLIST_FILE: YES
-        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Kick Nations.app/Kick Nations"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Kickroo.app/Kickroo"
         BUNDLE_LOADER: "$(TEST_HOST)"
 schemes:
   KickNations:

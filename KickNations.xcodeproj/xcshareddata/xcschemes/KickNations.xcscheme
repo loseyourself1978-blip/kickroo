@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "29B94D1767B3EB5B37776897"
-               BuildableName = "Kick Nations.app"
+               BuildableName = "Kickroo.app"
                BlueprintName = "KickNations"
                ReferencedContainer = "container:KickNations.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "29B94D1767B3EB5B37776897"
-            BuildableName = "Kick Nations.app"
+            BuildableName = "Kickroo.app"
             BlueprintName = "KickNations"
             ReferencedContainer = "container:KickNations.xcodeproj">
          </BuildableReference>
@@ -79,7 +79,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "29B94D1767B3EB5B37776897"
-            BuildableName = "Kick Nations.app"
+            BuildableName = "Kickroo.app"
             BlueprintName = "KickNations"
             ReferencedContainer = "container:KickNations.xcodeproj">
          </BuildableReference>
@@ -96,7 +96,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "29B94D1767B3EB5B37776897"
-            BuildableName = "Kick Nations.app"
+            BuildableName = "Kickroo.app"
             BlueprintName = "KickNations"
             ReferencedContainer = "container:KickNations.xcodeproj">
          </BuildableReference>

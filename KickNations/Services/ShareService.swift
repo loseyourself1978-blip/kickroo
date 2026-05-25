@@ -5,7 +5,7 @@ struct ShareService {
     func text(for result: MatchResult) -> String {
         let player = NationLibrary.nation(for: result.configuration.playerNationID)
         let opponent = NationLibrary.nation(for: result.configuration.opponentNationID)
-        return "Kick Nations: \(player.shortCode) \(result.playerScore)-\(result.opponentScore) \(opponent.shortCode). \(result.headline)"
+        return "Kickroo!: \(player.shortCode) \(result.playerScore)-\(result.opponentScore) \(opponent.shortCode). \(result.headline)"
     }
 
     func makePlaceholderHighlightCard(for result: MatchResult) -> UIImage {

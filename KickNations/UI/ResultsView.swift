@@ -127,7 +127,7 @@ struct ResultsView: View {
     }
 
     private var shareText: String {
-        "Kick Nations: \(playerNation.shortCode) \(result.playerScore)-\(result.opponentScore) \(opponentNation.shortCode). Max combo \(result.maxCombo). \(result.headline)"
+        "Kickroo!: \(playerNation.shortCode) \(result.playerScore)-\(result.opponentScore) \(opponentNation.shortCode). Max combo \(result.maxCombo). \(result.headline)"
     }
 
     private var cupStatusPanel: some View {

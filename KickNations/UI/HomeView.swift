@@ -25,10 +25,10 @@ struct HomeView: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Kick Nations")
+                    Text("Kickroo!")
                         .font(.system(size: 42, weight: .black, design: .rounded))
                         .foregroundStyle(Color.knInk)
-                    Text("2026 World Cup Season")
+                    Text("Swipe Soccer Cup")
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(Color.knGold)
                 }
@@ -59,7 +59,7 @@ struct HomeView: View {
                     .background(Color.knGold, in: RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("World Cup Season")
+                    Text("Kickroo Cup")
                         .font(.title2.weight(.black))
                         .foregroundStyle(.white)
                     Text("48 teams, 12 groups, one trophy run")
@@ -113,7 +113,7 @@ struct HomeView: View {
     }
 
     private var footer: some View {
-        Text("Unofficial arcade football cup game built for the 2026 World Cup season.")
+        Text("Unofficial arcade football cup game built for the 2026 global soccer season.")
             .font(.caption2.weight(.semibold))
             .foregroundStyle(.white.opacity(0.48))
             .multilineTextAlignment(.center)

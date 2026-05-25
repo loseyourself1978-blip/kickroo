@@ -166,7 +166,7 @@ struct MatchSnapshot: Equatable {
         maxCombo: 0,
         isOvertime: false,
         phaseName: "Kickoff",
-        phaseDetail: "Aim + hold"
+        phaseDetail: "Swipe a player"
     )
 }
 

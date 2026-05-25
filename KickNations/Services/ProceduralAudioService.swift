@@ -8,6 +8,7 @@ enum ProceduralSoundEffect {
     case goal
     case roar
     case boo
+    case whistle
 }
 
 final class ProceduralAudioService {
@@ -15,6 +16,7 @@ final class ProceduralAudioService {
 
     private let engine = AVAudioEngine()
     private let player = AVAudioPlayerNode()
+    private let announcer = AVSpeechSynthesizer()
     private let sampleRate: Double = 44_100
     private let format: AVAudioFormat
     private var isConfigured = false
@@ -37,6 +39,17 @@ final class ProceduralAudioService {
         if !player.isPlaying {
             player.play()
         }
+    }
+
+    func announceGoal() {
+        guard !ProcessInfo.processInfo.arguments.contains("-disableAudio") else { return }
+
+        let utterance = AVSpeechUtterance(string: "Goal!")
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.82
+        utterance.pitchMultiplier = 1.26
+        utterance.volume = 0.94
+        announcer.speak(utterance)
     }
 
     private func configureIfNeeded() throws {
@@ -77,6 +90,7 @@ final class ProceduralAudioService {
         case .goal: 0.58
         case .roar: 0.34
         case .boo: 0.42
+        case .whistle: 0.24
         }
     }
 
@@ -114,6 +128,13 @@ final class ProceduralAudioService {
             let env = envelope(progress: progress, attack: 0.10, release: 0.16)
             let wobble = sin(2 * Double.pi * 92 * t + sin(2 * Double.pi * 8 * t) * 0.7)
             return clamp(Float((wobble * 0.26 + noise * 0.08) * Double(env)))
+
+        case .whistle:
+            let env = envelope(progress: progress, attack: 0.035, release: 0.12)
+            let vibrato = sin(2 * Double.pi * 18 * t) * 75
+            let tone = sin(2 * Double.pi * (2_150 + vibrato) * t)
+            let overtone = sin(2 * Double.pi * (3_240 + vibrato * 0.5) * t) * 0.28
+            return clamp(Float((tone * 0.44 + overtone) * Double(env)))
         }
     }
 
