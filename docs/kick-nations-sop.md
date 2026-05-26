@@ -1,7 +1,7 @@
 # Kickroo! 开发 SOP
 
-版本：SOP-0.4.2  
-生效日期：2026-05-25  
+版本：SOP-0.4.3  
+生效日期：2026-05-26  
 适用项目：Kickroo! iOS  
 目标远端仓库：`loseyourself1978-blip/kickroo`
 
@@ -60,7 +60,7 @@
 1. 静态检查：确认文档、脚本、项目文件存在。
 2. 构建检查：`xcodebuild -project KickNations.xcodeproj -scheme KickNations -destination ... build`。
 3. 模拟器检查：启动 iPhone 模拟器、安装 App、运行 App。
-4. 运行效果检查：获取模拟器截图，确认首页/游戏页非空、主要 UI 可见。
+4. 运行效果检查：获取模拟器截图，确认首页/游戏页/结果分享页非空、主要 UI 可见。
 5. 可视化报告：生成 `reports/latest/index.html`，并用浏览器预览。
 
 失败处理：
@@ -127,6 +127,8 @@
 - 玩法无官方 IP 风险。
 - 自动化报告生成并可在浏览器打开。
 - 文档、代码、测试三者版本一致。
+- 结果页必须提供可分享的 Match/Cup 海报，至少 4 种视觉风格，海报包含比分/杯赛状态和公开落地页二维码。
+- `docs/index.html`、`docs/support.html`、`docs/privacy.html` 必须可通过 GitHub Pages 发布。
 
 ## 8. 长任务进度同步规则
 

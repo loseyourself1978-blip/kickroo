@@ -1,7 +1,7 @@
 # Kickroo! Product & Technical Spec
 
-Version: 0.4.2  
-Date: 2026-05-25  
+Version: 0.4.3  
+Date: 2026-05-26  
 Market: North America Apple App Store  
 Target launch-ready date: 2026-05-28  
 World tournament opening date: 2026-06-11  
@@ -46,6 +46,9 @@ Included in v0.4.2:
 - Original/procedural audio for crowd, kick, bounce, goal, roar, boo, whistle, and an original system announcer-style goal call.
 - Rebuilt App Icon from `icon.png` with North America-inspired red maple energy, blue star speed, green cactus/desert energy, three-way collision, a gold swipe trail, soccer ball, and goal frame.
 - Local progression and coins for completed official matches.
+- Share Poster flow on the results screen: players can choose Match or Cup story content, pick one of four visual poster styles, and share a 9:16 generated image plus a landing-page link.
+- Share posters include the match score, headline, combo/style/coins, cup achievement or standings summary, and a QR code pointing to the public Kickroo! landing page. The QR/link is intended for App Store or marketing landing-page traffic only, not external purchases.
+- Public marketing, support, and privacy pages live in `docs/` for GitHub Pages publishing.
 
 Removed from v0.3:
 
@@ -103,6 +106,7 @@ Recommended physics:
 | Sideline props | `KickNations/Game/PinballArenaController.swift` | Corner flags, assistant-referee markers, goal-frame rebound support |
 | Roar waves | `KickNations/Game/RoarController.swift` | Energy, heat, wave origins, force |
 | Audio | `KickNations/Services/ProceduralAudioService.swift` | Original generated sound effects, kickoff whistle, announcer-style goal call |
+| Share | `KickNations/Services/ShareService.swift` | Match/cup poster rendering, QR code generation, share message and landing URL |
 | UI | `KickNations/UI/*.swift` | Home, nation select, game HUD, results |
 | Tests | `KickNationsTests/GameplayLogicTests.swift` | Cup rules, rankings, single mode, bouncy rules |
 | App Icon | `scripts/generate_app_icon.swift` | Reproducible icon generation from root `icon.png`, exported as exact RGB asset-catalog sizes |
@@ -115,6 +119,7 @@ Required automated screenshots:
 - First-match animated tutorial.
 - Practice First gameplay.
 - Official Cup gameplay.
+- Result Share Poster screen.
 
 Required checks:
 
@@ -127,3 +132,6 @@ Required checks:
 - Ball contacts visibly push players/opponents away; AI does not surround the ball at kickoff or after restarts.
 - Goals show gold uppercase `GOAL!`, highlighted score, announcer-style goal call, cheers/boos, and a whistle on restart.
 - App icon renders from an RGB, exact-size asset catalog and should appear on the iOS home screen after reinstall.
+- Results page shows an attractive Share Poster panel with Match/Cup content choices, four poster styles, image preview, and system share sheet output.
+- Generated posters include a QR code/landing-page link to `https://loseyourself1978-blip.github.io/kickroo/`.
+- GitHub Pages publishing serves `docs/index.html`, `docs/support.html`, and `docs/privacy.html`.

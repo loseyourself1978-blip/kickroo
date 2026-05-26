@@ -1,7 +1,7 @@
 # Kickroo! App Store Connect Metadata
 
 Locale: en-US  
-Version: 0.4.2 build 7  
+Version: 0.4.3 build 8  
 Primary category: Games  
 Secondary category: Sports  
 Age rating note: Cartoon sports action, no betting, no real-world official marks.
@@ -45,7 +45,7 @@ Kickroo! is an unofficial arcade soccer game. It is not affiliated with, endorse
 
 ## What’s New
 
-Version 0.4.2 rebrands the game as Kickroo!, adds the new North America-inspired swipe-shot icon, improves playtest feel with a clearer top-left exit control, fairer kickoff spacing, player rebound after ball contact, broadcast-style GOAL! moments, and restart whistles.
+Version 0.4.3 adds shareable match and cup posters with four bold visual styles, QR landing-page links, and a richer results-screen share flow, plus GitHub Pages deployment for the marketing, support, and privacy pages.
 
 ## Support URL
 

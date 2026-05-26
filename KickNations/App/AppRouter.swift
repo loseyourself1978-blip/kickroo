@@ -17,7 +17,9 @@ final class AppRouter: ObservableObject {
 
     init() {
         let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("-smokePractice") || arguments.contains("-smokeQuickKick") {
+        if arguments.contains("-smokeResult") {
+            showSmokeResult()
+        } else if arguments.contains("-smokePractice") || arguments.contains("-smokeQuickKick") {
             previousScreenBeforeGame = .home
             screen = .game(makePracticeConfiguration(nationID: selectedNationID))
         } else if arguments.contains("-smokeCup") || arguments.contains("-smokeGlobalCup") || arguments.contains("-smokePinballRush") {
@@ -108,5 +110,25 @@ final class AppRouter: ObservableObject {
     private func showGame(_ configuration: MatchConfiguration) {
         previousScreenBeforeGame = screen
         screen = .game(configuration)
+    }
+
+    private func showSmokeResult() {
+        var campaign = GlobalCupCampaign.start(playerNationID: .usa, seed: 0x20260526)
+        guard let configuration = campaign.currentConfiguration() else { return }
+        let result = MatchResult(
+            configuration: configuration,
+            playerScore: 2,
+            opponentScore: 3,
+            duration: 50,
+            headline: "21-hit post riot. Totally intentional.",
+            chaosScore: 808,
+            maxCombo: 21,
+            coinsEarned: 140
+        )
+        campaign.record(result: result)
+        cupCampaign = campaign
+        selectedNationID = .usa
+        previousScreenBeforeGame = .home
+        screen = .results(result)
     }
 }

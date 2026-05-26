@@ -84,6 +84,10 @@ write_report() {
         <h2>Official Cup</h2>
         <img src="screenshots/cup.png" alt="Official cup screenshot">
       </section>
+      <section class="panel">
+        <h2>Result Share Poster</h2>
+        <img src="screenshots/result-share.png" alt="Result screen share poster screenshot">
+      </section>
     </div>
     <section class="panel">
       <h2>Log</h2>
@@ -134,6 +138,11 @@ xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
 run_step "launch official cup" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokeCup -skipTutorial -disableAudio
 sleep 4
 run_step "screenshot cup" capture_screenshot "$DEVICE_ID" "$SCREENSHOT_DIR/cup.png"
+
+xcrun simctl terminate "$DEVICE_ID" "$BUNDLE_ID" 2>/dev/null || true
+run_step "launch result share poster" xcrun simctl launch "$DEVICE_ID" "$BUNDLE_ID" -smokeResult -disableAudio
+sleep 2
+run_step "screenshot result share poster" capture_screenshot "$DEVICE_ID" "$SCREENSHOT_DIR/result-share.png"
 
 status_color="#17B978"
 write_report "PASSED"

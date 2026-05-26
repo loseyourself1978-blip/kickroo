@@ -1,4 +1,5 @@
 import CoreGraphics
+import UIKit
 import XCTest
 @testable import Kickroo
 
@@ -94,5 +95,40 @@ final class GameplayLogicTests: XCTestCase {
 
         XCTAssertEqual(campaign.stage, .roundOf32)
         XCTAssertTrue(campaign.currentConfiguration()?.rules.requiresWinner == true)
+    }
+
+    func testSharePosterRendersAllStylesAndUsesPublicLandingPage() {
+        var campaign = GlobalCupCampaign.start(playerNationID: .usa, seed: 20260514)
+        let configuration = campaign.currentConfiguration()!
+        let result = MatchResult(
+            configuration: configuration,
+            playerScore: 2,
+            opponentScore: 1,
+            duration: 50,
+            headline: "Late rail winner",
+            chaosScore: 808,
+            maxCombo: 21,
+            coinsEarned: 140
+        )
+        campaign.record(result: result)
+
+        let service = ShareService()
+        let message = service.text(for: result, campaign: campaign, content: .cup)
+
+        XCTAssertTrue(message.contains("https://loseyourself1978-blip.github.io/kickroo/"))
+        XCTAssertEqual(SharePosterStyle.allCases.count, 4)
+
+        for style in SharePosterStyle.allCases {
+            let image = service.makeHighlightPoster(
+                for: result,
+                campaign: campaign,
+                content: .cup,
+                style: style,
+                size: CGSize(width: 270, height: 480)
+            )
+            XCTAssertEqual(image.size.width, 270, accuracy: 0.1)
+            XCTAssertEqual(image.size.height, 480, accuracy: 0.1)
+            XCTAssertNotNil(image.cgImage)
+        }
     }
 }

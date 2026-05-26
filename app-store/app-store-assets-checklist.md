@@ -1,7 +1,7 @@
 # Kickroo! App Store 素材清单
 
-日期：2026-05-25  
-版本：0.4.2 build 7  
+日期：2026-05-26  
+版本：0.4.3 build 8  
 Locale：en-US  
 目标：美国 Apple App Store 首次提交准备
 
@@ -14,10 +14,10 @@ Locale：en-US
 | Promotional text | 就绪 | `app-store/metadata/en-US/promotional-text.txt`，低于 170 字符 |
 | Keywords | 就绪 | `app-store/metadata/en-US/keywords.txt`，低于 100 字符 |
 | Description | 就绪 | `app-store/metadata/en-US/description.txt`，低于 App Store 描述上限 |
-| What’s New | 就绪 | 记录在 `app-store/metadata/en-US/app-store-connect.md`，已更新到 v0.4.2 |
-| Support URL | 基本就绪 | `https://loseyourself1978-blip.github.io/kickroo/support.html` |
-| Marketing URL | 基本就绪 | `https://loseyourself1978-blip.github.io/kickroo/` |
-| Privacy page | 基本就绪 | `docs/privacy.html` |
+| What’s New | 就绪 | 记录在 `app-store/metadata/en-US/app-store-connect.md`，已更新到 v0.4.3 |
+| Support URL | 待 GitHub Pages 首次部署确认 | `https://loseyourself1978-blip.github.io/kickroo/support.html` |
+| Marketing URL | 待 GitHub Pages 首次部署确认 | `https://loseyourself1978-blip.github.io/kickroo/` |
+| Privacy page | 待 GitHub Pages 首次部署确认 | `docs/privacy.html`，随 `docs/` 发布到 Pages |
 | Screenshots | 就绪 | 4 张 iPhone 6.5-inch 竖屏 PNG 均为 `1242 x 2688`；前两张展示最新玩法反馈，第 4 张首页图已刷新为 Kickroo! 品牌 |
 | App previews | 暂不提交 | 有计划文档，无视频素材；本版本建议先不上传 |
 | App icon | 就绪 | 使用根目录 `icon.png` 生成 Kickroo! 新版三主办地灵感碰撞射门图标；Asset catalog 含 20/29/40/60/1024 尺寸，1024 图为 RGB |

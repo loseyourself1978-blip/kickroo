@@ -186,3 +186,30 @@
 - 模拟器安装/启动 `com.loseyourself1978.kickroo` 通过，首页截图 `reports/latest/screenshots/v0.4.2-kickroo-home-clean2.png` 已确认显示 `Kickroo!`。
 - App Store 第 4 张首页截图已刷新为 Kickroo! 版本，4 张 iPhone 6.5-inch 截图均校验为 `1242 x 2688`。
 - 2026-05-25 页面资源复查通过：`index.html`、`support.html`、`privacy.html`、`assets/hero-gameplay.png` 本地 HTTP HEAD 均返回 200。
+
+## v0.4.3 / 2026-05-26
+
+状态：按试玩反馈升级分享传播与公开网页部署，等待完整验收。
+
+代码版本：
+
+- `MARKETING_VERSION`: 0.4.3
+- `CURRENT_PROJECT_VERSION`: 8
+
+主要变更：
+
+- 结果页分享从纯文字 `ShareLink` 升级为 Share Poster 面板。
+- 玩家可选择 Match 或 Cup 两种分享内容：单场赛果、杯赛进度/小组排名/晋级状态/冠军等。
+- 新增 4 种 9:16 海报风格：Stadium、Final、Roar、Bracket，参考大型足球赛事海报的强对比背景、灯光、金色决赛、街头声浪和淘汰赛视觉。
+- 海报自动生成比分、双方短码、球队色 token、headline、combo/style/coins、杯赛摘要和二维码。
+- 二维码和分享文案指向 `https://loseyourself1978-blip.github.io/kickroo/`，作为北美 App Store 上架前的公开营销/下载落地页，后续可替换为 App Store URL。
+- 新增系统分享面板，可分享图片、文案和落地页 URL。
+- 准备 GitHub Pages 发布路径，将 `docs/index.html`、`docs/support.html`、`docs/privacy.html` 和页面素材从 `docs/` 发布为公开可访问页面。
+- 营销首页新增下载/发布信息区域，明确 App Store 链接将在 release 时添加。
+
+验证：
+
+- `xcodegen generate` 通过。
+- `xcodebuild -project KickNations.xcodeproj -scheme KickNations -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath DerivedData test` 通过，8 个测试全部通过。
+- `scripts/acceptance.sh` 通过，新增结果页 Share Poster 截图 `reports/latest/screenshots/result-share.png`。
+- 本地 HTTP 资源检查通过：`index.html`、`support.html`、`privacy.html`、`assets/hero-gameplay.png` 均返回 200。
