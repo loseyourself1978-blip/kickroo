@@ -94,6 +94,33 @@
       padding: 22px;
     }
     .card strong { color: var(--ink); font-size: 20px; }
+    .download {
+      padding: 0;
+      background: linear-gradient(135deg, rgba(242,193,78,.16), rgba(17,105,71,.24));
+      border-top: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .download-inner {
+      width: min(1040px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 54px 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+    .store-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 56px;
+      padding: 0 18px;
+      border-radius: 8px;
+      color: #101622;
+      background: var(--gold);
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
     footer {
       border-top: 1px solid rgba(255,255,255,.08);
       padding: 28px 0 42px;
@@ -104,6 +131,7 @@
     @media (max-width: 760px) {
       header { grid-template-columns: 1fr; min-height: 0; }
       .grid { grid-template-columns: 1fr; }
+      .download-inner { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -114,7 +142,7 @@
       <h1>Kickroo!</h1>
       <p class="lead">Swipe any player, bounce off the ball, and chase a 48-team global cup built for summer soccer fever.</p>
       <div class="actions">
-        <a class="button" href="#features">See Features</a>
+        <a class="button" href="#download">Get Kickroo!</a>
         <a class="button secondary" href="support.html">Support</a>
       </div>
     </div>
@@ -122,6 +150,16 @@
       <img src="assets/hero-gameplay.png" alt="Kickroo! gameplay showing 3v3 soccer chaos">
     </div>
   </header>
+
+  <section class="download" id="download">
+    <div class="download-inner">
+      <div>
+        <h2>Built for iPhone</h2>
+        <p>Kickroo! will use this page as its public marketing and share-card landing page. The App Store link will be added here at release.</p>
+      </div>
+      <a class="store-badge" href="support.html">Support & Release Info</a>
+    </div>
+  </section>
 
   <main>
     <section id="features">
