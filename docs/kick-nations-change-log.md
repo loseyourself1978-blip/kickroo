@@ -213,4 +213,4 @@
 - `xcodebuild -project KickNations.xcodeproj -scheme KickNations -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -derivedDataPath DerivedData test` 通过，8 个测试全部通过。
 - `scripts/acceptance.sh` 通过，新增结果页 Share Poster 截图 `reports/latest/screenshots/result-share.png`。
 - 本地 HTTP 资源检查通过：`index.html`、`support.html`、`privacy.html`、`assets/hero-gameplay.png` 均返回 200。
-- 主分支已推送到 GitHub commit `3a46664`，`docs/` 已推送到 `gh-pages` 分支 commit `e43e062`。
+- 主分支已推送到 GitHub commit `3a46664`，`docs/` 已推送到 `gh-pages` 分支。
